@@ -4,6 +4,9 @@ App interactiva en español con varias rutas de aprendizaje. Todas usan el mismo
 formato: pasos cortos (Idea → Práctica → Reto), editor en la página, pruebas
 automáticas, pistas y progreso guardado en el navegador.
 
+**Úsala en línea:** https://mrjota7474.github.io/aprender-a-programar/ (publicada con GitHub Pages;
+funciona en el celular y no necesita instalar nada).
+
 Rutas disponibles hoy:
 
 - **Python** — 17 lecciones, 51 pasos.
