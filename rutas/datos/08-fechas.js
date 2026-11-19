@@ -1,0 +1,133 @@
+globalThis.Rutas.agregarLeccion(
+  'datos',
+  {
+    id: 'fechas',
+    titulo: 'Fechas',
+    pasos: [
+      {
+        id: 'idea',
+        titulo: 'Un texto que parece fecha no es una fecha',
+        texto: [
+          'En un CSV, `"03/11/2026"` es solo un texto: no se le puede preguntar el mes ni restarle días. Primero hay que convertirlo con `pd.to_datetime`.',
+          'En Colombia se escribe día/mes/año. Para que pandas no lo confunda con el formato de Estados Unidos (mes/día), se le dice el formato: `format="%d/%m/%Y"` (`%d` día, `%m` mes, `%Y` año de cuatro cifras).',
+          'Una columna de fechas tiene herramientas en `.dt`: `.dt.month` (el mes), `.dt.day` (el día) y `.dt.dayofweek` (el día de la semana: 0 es lunes y 6 es domingo). `.dt.day_name()` también existe, pero da los nombres en inglés.',
+          'Las fechas se comparan y se restan: `fecha > pd.Timestamp("2026-11-15")` sirve para filtrar, y la resta de dos fechas da cuántos días pasaron.',
+        ],
+        codigo: [
+          'import pandas as pd',
+          '',
+          'ventas = pd.DataFrame({',
+          '    "fecha": ["03/11/2026", "15/11/2026", "22/11/2026"],',
+          '    "total": [45000, 30000, 61000],',
+          '})',
+          '',
+          'ventas["fecha"] = pd.to_datetime(ventas["fecha"], format="%d/%m/%Y")',
+          'print(ventas["fecha"].dt.month)',
+          'print(ventas["fecha"].dt.dayofweek)   # 0 = lunes, 6 = domingo',
+          'print(ventas[ventas["fecha"] > pd.Timestamp("2026-11-10")])',
+          'print(ventas["fecha"].max() - ventas["fecha"].min())',
+        ].join('\n'),
+      },
+      {
+        id: 'practica',
+        titulo: 'El mes de cada venta',
+        texto: [
+          'Convierte la columna `fecha` (escrita día/mes/año) en fechas de verdad y crea la columna `mes` con el número del mes de cada venta.',
+        ],
+        codigo: [
+          'import pandas as pd',
+          '',
+          'ventas = pd.DataFrame({',
+          '    "fecha": ["28/10/2026", "02/11/2026", "05/12/2026"],',
+          '    "total": [20000, 35000, 50000],',
+          '})',
+          '',
+          '# Convierte fecha y crea la columna mes',
+          '',
+          'print(ventas)',
+        ].join('\n'),
+        pruebas: [
+          { descripcion: 'La columna mes es 10, 11 y 12', condicion: 'list(ventas["mes"]) == [10, 11, 12]' },
+          {
+            descripcion: 'fecha quedó como fecha (se le puede pedir el día)',
+            condicion: 'list(ventas["fecha"].dt.day) == [28, 2, 5]',
+          },
+        ],
+        pistas: [
+          'Convierte: `ventas["fecha"] = pd.to_datetime(ventas["fecha"], format="%d/%m/%Y")`',
+          'El mes de una columna de fechas está en `.dt.month`',
+          '`ventas["mes"] = ventas["fecha"].dt.month`',
+        ],
+        solucion: [
+          'import pandas as pd',
+          '',
+          'ventas = pd.DataFrame({',
+          '    "fecha": ["28/10/2026", "02/11/2026", "05/12/2026"],',
+          '    "total": [20000, 35000, 50000],',
+          '})',
+          '',
+          'ventas["fecha"] = pd.to_datetime(ventas["fecha"], format="%d/%m/%Y")',
+          'ventas["mes"] = ventas["fecha"].dt.month',
+          'print(ventas)',
+        ].join('\n'),
+      },
+      {
+        id: 'reto',
+        titulo: 'Reto final: las ventas del fin de semana',
+        texto: [
+          'Don Pepe sospecha que los sábados y domingos vende más. Crea la función `total_fin_de_semana(tabla)` que recibe una tabla con `fecha` (texto día/mes/año) y `total`, y devuelve la suma de `total` de las ventas hechas en **sábado o domingo**.',
+          'Recuerda: con `.dt.dayofweek` el sábado es 5 y el domingo 6. No modifiques la tabla que recibes: guarda las fechas convertidas en una variable aparte.',
+        ],
+        codigo: [
+          'import pandas as pd',
+          '',
+          '# 14 y 15 de noviembre de 2026 son sábado y domingo',
+          'ventas = pd.DataFrame({',
+          '    "fecha": ["13/11/2026", "14/11/2026", "15/11/2026", "16/11/2026"],',
+          '    "total": [40000, 90000, 70000, 25000],',
+          '})',
+          '',
+          '# Crea aquí la función total_fin_de_semana',
+          '',
+        ].join('\n'),
+        pruebas: [
+          { descripcion: 'total_fin_de_semana es una función', condicion: 'callable(total_fin_de_semana)' },
+          {
+            descripcion: 'El fin de semana se vendieron 160000',
+            condicion: 'bool(total_fin_de_semana(ventas) == 160000)',
+          },
+          {
+            descripcion: 'Si no hay ventas en fin de semana, da 0',
+            condicion:
+              'bool(total_fin_de_semana(pd.DataFrame({"fecha": ["16/11/2026"], "total": [5000]})) == 0)',
+          },
+          {
+            descripcion: 'La tabla que recibe no cambia',
+            condicion: 'total_fin_de_semana(ventas) is not None and ventas["fecha"].iloc[0] == "13/11/2026"',
+          },
+        ],
+        pistas: [
+          'Convierte en una variable aparte: `fechas = pd.to_datetime(tabla["fecha"], format="%d/%m/%Y")`',
+          'La pregunta "¿es fin de semana?" es `fechas.dt.dayofweek >= 5`',
+          '`return tabla.loc[fechas.dt.dayofweek >= 5, "total"].sum()`',
+        ],
+        solucion: [
+          'import pandas as pd',
+          '',
+          'ventas = pd.DataFrame({',
+          '    "fecha": ["13/11/2026", "14/11/2026", "15/11/2026", "16/11/2026"],',
+          '    "total": [40000, 90000, 70000, 25000],',
+          '})',
+          '',
+          '',
+          'def total_fin_de_semana(tabla):',
+          '    fechas = pd.to_datetime(tabla["fecha"], format="%d/%m/%Y")',
+          '    return tabla.loc[fechas.dt.dayofweek >= 5, "total"].sum()',
+          '',
+          '',
+          'print(total_fin_de_semana(ventas))',
+        ].join('\n'),
+      },
+    ],
+  }
+);

@@ -1,0 +1,199 @@
+// Pruebas del resaltado de código y de la explicación de errores de Python.
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+
+require('../js/formato.js');
+require('../js/resaltado.js');
+require('../js/motores.js');
+require('../js/trabajadores.js');
+require('../js/motor-python.js');
+
+const { resaltar, explicarErrorPython, Motores } = globalThis;
+
+// ---------- resaltado ----------
+
+test('resalta palabras clave, textos, números y comentarios en JavaScript', () => {
+  const html = resaltar('let x = 5; // nota\nconsole.log("hola");', 'javascript');
+
+  assert.match(html, /<span class="r-palabra">let<\/span>/);
+  assert.match(html, /<span class="r-numero">5<\/span>/);
+  assert.match(html, /<span class="r-comentario">\/\/ nota<\/span>/);
+  assert.match(html, /<span class="r-cadena">&quot;hola&quot;<\/span>/);
+});
+
+test('resalta palabras clave, valores y comentarios en Python', () => {
+  const html = resaltar('def f():\n    return True  # listo', 'python');
+
+  assert.match(html, /<span class="r-palabra">def<\/span>/);
+  assert.match(html, /<span class="r-palabra">return<\/span>/);
+  assert.match(html, /<span class="r-valor">True<\/span>/);
+  assert.match(html, /<span class="r-comentario"># listo<\/span>/);
+});
+
+test('un símbolo de comentario dentro de un texto no es un comentario', () => {
+  const html = resaltar('x = "# no"', 'python');
+
+  assert.doesNotMatch(html, /r-comentario/);
+  assert.match(html, /<span class="r-cadena">&quot;# no&quot;<\/span>/);
+});
+
+test('una palabra clave dentro de otro nombre no se resalta', () => {
+  const html = resaltar('formato = letra', 'javascript');
+
+  assert.doesNotMatch(html, /r-palabra/);
+});
+
+test('escapa el HTML que escriba el estudiante', () => {
+  const html = resaltar('x = "<img src=x onerror=alert(1)>" + <b>', 'python');
+
+  assert.doesNotMatch(html, /<img|<b>/);
+  assert.match(html, /&lt;img/);
+});
+
+test('al quitar las etiquetas queda exactamente el código original', () => {
+  const codigo = 'for i in range(3):\n    print(f"{i} & <ok>")  # fin';
+  const desescapar = (texto) =>
+    texto
+      .replace(/<\/?span[^>]*>/g, '')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
+
+  assert.equal(desescapar(resaltar(codigo, 'python')), codigo);
+});
+
+test('con un lenguaje desconocido solo escapa, sin colores', () => {
+  assert.equal(resaltar('let <x>', 'cobol'), 'let &lt;x&gt;');
+});
+
+// ---------- motor de Python ----------
+
+test('el motor de Python queda registrado con su contrato completo', () => {
+  const motor = Motores.obtener('python');
+
+  assert.equal(typeof motor.ejecutar, 'function');
+  assert.equal(typeof motor.preparar, 'function');
+  assert.equal(motor.lenguaje, 'python');
+  assert.equal(motor.sangria, '    ');
+});
+
+test('explicarErrorPython traduce un nombre que no existe y dice la línea', () => {
+  const texto = explicarErrorPython({
+    nombre: 'NameError',
+    mensaje: "name 'nombr' is not defined",
+    linea: 3,
+  });
+
+  assert.match(texto, /Usaste "nombr"/);
+  assert.match(texto, /línea 3/);
+  assert.match(texto, /Mensaje original: NameError/);
+});
+
+test('explicarErrorPython explica la sangría y los errores de escritura', () => {
+  const sangria = explicarErrorPython({ nombre: 'IndentationError', mensaje: 'expected an indented block', linea: 2 });
+  const escritura = explicarErrorPython({ nombre: 'SyntaxError', mensaje: "expected ':'", linea: 1 });
+
+  assert.match(sangria, /sangría/);
+  assert.match(escritura, /dos puntos/);
+});
+
+test('explicarErrorPython muestra tal cual los mensajes propios de la app', () => {
+  const texto = explicarErrorPython({ nombre: 'TiempoAgotado', mensaje: 'Tardó mucho.' });
+
+  assert.equal(texto, 'Tardó mucho.');
+});
+
+test('explicarErrorPython no falla con un error desconocido y sin línea', () => {
+  const texto = explicarErrorPython({ nombre: 'ValueError', mensaje: 'raro', linea: null });
+
+  assert.match(texto, /Algo falló/);
+  assert.doesNotMatch(texto, /línea/);
+});
+
+// ---------- resaltado de HTML y CSS ----------
+
+test('resalta etiquetas, atributos, valores y comentarios en HTML', () => {
+  const html = resaltar('<!-- nota -->\n<a href="pan.html" class=menu>Pan</a>', 'html');
+
+  assert.match(html, /<span class="r-comentario">&lt;!-- nota --&gt;<\/span>/);
+  assert.match(html, /&lt;<span class="r-palabra">a<\/span>/);
+  assert.match(html, /<span class="r-valor">href<\/span>=<span class="r-cadena">&quot;pan.html&quot;<\/span>/);
+  assert.match(html, /<span class="r-valor">class<\/span>=<span class="r-cadena">menu<\/span>/);
+  assert.match(html, /&lt;\/<span class="r-palabra">a<\/span>&gt;/);
+});
+
+test('dentro de style resalta CSS y dentro de script resalta JavaScript', () => {
+  const html = resaltar(
+    '<style>\n/* fondo */ a:hover { color: #fff; margin: 10px; }\n</style>\n<script>let x = 5; // nota\n</script>',
+    'html'
+  );
+
+  assert.match(html, /<span class="r-comentario">\/\* fondo \*\/<\/span>/);
+  assert.match(html, /<span class="r-valor">color<\/span>: <span class="r-numero">#fff<\/span>/);
+  assert.match(html, /<span class="r-numero">10px<\/span>/);
+  // "a" antes de ":hover" es un selector, no una propiedad.
+  assert.match(html, / a:hover \{/);
+  assert.match(html, /<span class="r-palabra">let<\/span> x = <span class="r-numero">5<\/span>/);
+  assert.match(html, /<span class="r-comentario">\/\/ nota<\/span>/);
+});
+
+test('el resaltado de HTML escapa todo y conserva el código original', () => {
+  const codigo = '<p class="a">2 < 3 & "ok"</p>\n<style>p { color: red }</style>\n<script>if (a < b) { alert("<b>"); }</script>\n<h1>sin cerrar';
+  const html = resaltar(codigo, 'html');
+  const desescapar = (texto) =>
+    texto
+      .replace(/<\/?span[^>]*>/g, '')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
+
+  assert.doesNotMatch(html, /<(?!\/?span\b)/);
+  assert.equal(desescapar(html), codigo);
+});
+
+// ---------- resaltado de la terminal ----------
+
+test('resalta comandos, subcomandos de git, opciones, textos y comentarios en la terminal', () => {
+  const html = resaltar('# guardar\ngit commit -m "Primer commit"\nls', 'terminal');
+
+  assert.match(html, /<span class="r-comentario"># guardar<\/span>/);
+  assert.match(html, /<span class="r-palabra">git<\/span> <span class="r-palabra">commit<\/span>/);
+  assert.match(html, /<span class="r-valor">-m<\/span>/);
+  assert.match(html, /<span class="r-cadena">&quot;Primer commit&quot;<\/span>/);
+  assert.match(html, /<span class="r-palabra">ls<\/span>/);
+});
+
+test('en la terminal un # dentro de un texto o pegado a una palabra no es comentario', () => {
+  const html = resaltar('echo "nota #1" > a#b.txt', 'terminal');
+
+  assert.doesNotMatch(html, /r-comentario/);
+  assert.match(html, /<span class="r-cadena">&quot;nota #1&quot;<\/span>/);
+});
+
+test('en la terminal un subcomando solo se colorea después de git, y un guion dentro de un nombre no es opción', () => {
+  const html = resaltar('echo add\ngit switch -c nueva-portada', 'terminal');
+
+  assert.match(html, /<span class="r-palabra">echo<\/span> add/);
+  assert.match(html, /<span class="r-valor">-c<\/span> nueva-portada/);
+});
+
+test('el resaltado de la terminal escapa todo y conserva el código original', () => {
+  const codigo = 'echo "<h1>Hola & chao</h1>" >> index.html # fin\ngit log --oneline';
+  const html = resaltar(codigo, 'terminal');
+  const desescapar = (texto) =>
+    texto
+      .replace(/<\/?span[^>]*>/g, '')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
+
+  assert.doesNotMatch(html, /<(?!\/?span\b)/);
+  assert.equal(desescapar(html), codigo);
+});

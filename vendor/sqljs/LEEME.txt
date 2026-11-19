@@ -1,0 +1,11 @@
+sql.js 1.16.0 (SQLite 3.54 para el navegador)
+
+Origen:   paquete oficial "sql.js" del registro de npm (https://www.npmjs.com/package/sql.js)
+Proyecto: https://sql.js.org
+Licencia: MIT
+
+Aquí solo están los dos archivos que necesita la app (carpeta dist/ del paquete):
+  sql-wasm.js, sql-wasm.wasm
+
+Estos archivos no se editan. Para actualizar, descarga el paquete de nuevo con
+"npm pack sql.js" y reemplaza esos dos archivos.

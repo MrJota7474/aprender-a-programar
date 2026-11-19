@@ -1,0 +1,158 @@
+globalThis.Rutas.agregarLeccion(
+  'python',
+  {
+    id: 'clases',
+    titulo: 'Clases y objetos',
+    pasos: [
+      {
+        id: 'idea',
+        titulo: 'Moldes para crear objetos',
+        texto: [
+          'Una **clase** es un molde. Con ella creas **objetos**: cosas con sus propios datos y sus propias acciones. Por ejemplo, el molde `Producto` sirve para crear una arepa, un tinto, un buñuelo...',
+          '`__init__` es el método que corre al crear el objeto: ahí se guardan los datos como **atributos** (`self.nombre`). `self` es "este objeto en particular".',
+          'Un **método** es una función que vive dentro de la clase y siempre recibe `self` como primer parámetro. Se llama con un punto: `tinto.descripcion()`.',
+          'Cada objeto tiene sus propios atributos: cambiar el precio de uno no afecta a los demás.',
+        ],
+        codigo: [
+          'class Producto:',
+          '    def __init__(self, nombre, precio):',
+          '        self.nombre = nombre',
+          '        self.precio = precio',
+          '',
+          '    def descripcion(self):',
+          '        return self.nombre + " cuesta " + str(self.precio)',
+          '',
+          '',
+          'arepa = Producto("Arepa", 2000)',
+          'tinto = Producto("Tinto", 1500)',
+          '',
+          'print(arepa.descripcion())',
+          'print(tinto.nombre)',
+          '',
+          'tinto.precio = 1800  # solo cambia este objeto',
+          'print(tinto.descripcion())',
+          'print(arepa.precio)',
+        ].join('\n'),
+      },
+      {
+        id: 'practica',
+        titulo: 'Producto con IVA',
+        texto: [
+          'Crea la clase `Producto` con un `__init__` que guarde `nombre` y `precio`, y un método `con_iva()` que devuelva el precio más el 19 % de IVA (`precio * 1.19`).',
+          'Después crea `arepa = Producto("Arepa", 2000)` y muestra en la consola su precio con IVA.',
+        ],
+        codigo: [
+          'class Producto:',
+          '    # Agrega aquí __init__ y el método con_iva',
+          '    pass',
+          '',
+          '',
+          '# Crea aquí arepa y muestra su precio con IVA',
+          '',
+        ].join('\n'),
+        pruebas: [
+          { descripcion: 'Producto es una clase', condicion: 'isinstance(Producto, type)' },
+          {
+            descripcion: 'Guarda el nombre y el precio como atributos',
+            condicion: 'Producto("Tinto", 1500).nombre == "Tinto" and Producto("Tinto", 1500).precio == 1500',
+          },
+          {
+            descripcion: 'con_iva() de un producto de 1000 devuelve 1190',
+            condicion: 'abs(Producto("Pan", 1000).con_iva() - 1190) < 0.01',
+          },
+          {
+            descripcion: 'con_iva() de un producto de 2500 devuelve 2975',
+            condicion: 'abs(Producto("Café", 2500).con_iva() - 2975) < 0.01',
+          },
+          { descripcion: 'arepa es un Producto', condicion: 'isinstance(arepa, Producto)' },
+          { descripcion: 'Muestras el precio con IVA de la arepa (2380)', condicion: 'any(re.search(r"2[.,]?380", l) for l in salida)' },
+        ],
+        pistas: [
+          'Dentro de la clase: `def __init__(self, nombre, precio):` y adentro `self.nombre = nombre` y `self.precio = precio`',
+          'El método: `def con_iva(self):` con `return self.precio * 1.19`',
+          'Fuera de la clase: `arepa = Producto("Arepa", 2000)` y `print(arepa.con_iva())`',
+        ],
+        solucion: [
+          'class Producto:',
+          '    def __init__(self, nombre, precio):',
+          '        self.nombre = nombre',
+          '        self.precio = precio',
+          '',
+          '    def con_iva(self):',
+          '        return self.precio * 1.19',
+          '',
+          '',
+          'arepa = Producto("Arepa", 2000)',
+          'print(arepa.con_iva())',
+        ].join('\n'),
+      },
+      {
+        id: 'reto',
+        titulo: 'Reto: el carrito',
+        texto: [
+          'Ya tienes la clase `Producto`. Crea la clase `Carrito` que guarda los productos que va comprando un cliente.',
+          'Debe tener el método `agregar(producto, cantidad)`, que anota el producto la cantidad de veces indicada, y el método `total()`, que devuelve lo que suma todo (precio por cantidad de cada producto).',
+          'Un carrito recién creado tiene total 0, y cada carrito es independiente de los demás.',
+        ],
+        codigo: [
+          'class Producto:',
+          '    def __init__(self, nombre, precio):',
+          '        self.nombre = nombre',
+          '        self.precio = precio',
+          '',
+          '',
+          '# Crea aquí la clase Carrito',
+          '',
+        ].join('\n'),
+        pruebas: [
+          { descripcion: 'Carrito es una clase', condicion: 'isinstance(Carrito, type)' },
+          { descripcion: 'Un carrito vacío tiene total 0', condicion: 'Carrito().total() == 0' },
+          {
+            descripcion: 'Con un producto y cantidad 1, el total es su precio',
+            condicion: '(lambda c: (c.agregar(Producto("Arepa", 3000), 1), c.total())[-1])(Carrito()) == 3000',
+          },
+          {
+            descripcion: 'Con varios productos y cantidades suma bien (10500)',
+            condicion:
+              '(lambda c: (c.agregar(Producto("Arepa", 3000), 2), c.agregar(Producto("Jugo", 4500), 1), c.total())[-1])(Carrito()) == 10500',
+          },
+          {
+            descripcion: 'Agregar el mismo producto dos veces suma las dos veces',
+            condicion:
+              '(lambda c, p: (c.agregar(p, 1), c.agregar(p, 3), c.total())[-1])(Carrito(), Producto("Buñuelo", 1000)) == 4000',
+          },
+          {
+            descripcion: 'Cada carrito es independiente',
+            condicion:
+              '(lambda a, b: (a.agregar(Producto("X", 100), 5), b.total())[-1])(Carrito(), Carrito()) == 0',
+          },
+        ],
+        pistas: [
+          'En `__init__`, crea la lista de compras de ese carrito: `self.compras = []`',
+          '`agregar` puede guardar la pareja: `self.compras.append((producto, cantidad))`',
+          '`total` recorre `self.compras` con `for producto, cantidad in self.compras:` y suma `producto.precio * cantidad`. Al final, `return total`',
+        ],
+        solucion: [
+          'class Producto:',
+          '    def __init__(self, nombre, precio):',
+          '        self.nombre = nombre',
+          '        self.precio = precio',
+          '',
+          '',
+          'class Carrito:',
+          '    def __init__(self):',
+          '        self.compras = []',
+          '',
+          '    def agregar(self, producto, cantidad):',
+          '        self.compras.append((producto, cantidad))',
+          '',
+          '    def total(self):',
+          '        total = 0',
+          '        for producto, cantidad in self.compras:',
+          '            total = total + producto.precio * cantidad',
+          '        return total',
+        ].join('\n'),
+      },
+    ],
+  }
+);

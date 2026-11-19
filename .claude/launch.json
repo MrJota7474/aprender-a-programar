@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "aprender",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["servidor.py", "--puerto", "4173", "--sin-navegador"],
+      "port": 4173
+    }
+  ]
+}

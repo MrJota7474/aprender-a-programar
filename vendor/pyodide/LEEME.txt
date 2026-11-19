@@ -1,0 +1,17 @@
+Pyodide 314.0.8 (Python 3.14 para el navegador)
+
+Origen:   paquete oficial "pyodide" del registro de npm (https://www.npmjs.com/package/pyodide)
+Proyecto: https://pyodide.org
+Licencia: Mozilla Public License 2.0 (MPL-2.0)
+
+Aquí solo están los archivos del núcleo que necesita la app:
+  pyodide.mjs, pyodide.asm.mjs, pyodide.asm.wasm, python_stdlib.zip, pyodide-lock.json
+
+Estos archivos no se editan. Para actualizar, descarga el paquete de nuevo con
+"npm pack pyodide" y reemplaza esos cinco archivos.
+
+Paquetes extra (agregados el 19 de noviembre de 2026, para la ruta de análisis de datos):
+  numpy-2.4.6, pandas-3.0.2, python_dateutil-2.9.0.post0, pytz-2026.1.post1, six-1.17.0
+Origen: https://cdn.jsdelivr.net/pyodide/v314.0.8/full/ (distribución oficial de Pyodide).
+Cada archivo se comprobó con su sha256 de pyodide-lock.json. Pyodide los carga con
+loadPackage("pandas") desde esta misma carpeta, sin internet.

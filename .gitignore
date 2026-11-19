@@ -1,0 +1,10 @@
+# Archivos que Git no debe guardar.
+# Copias temporales que Python crea solo al correr servidor.py.
+__pycache__/
+*.pyc
+# Ajustes personales de Claude Code en este computador (no son del proyecto).
+.claude/settings.local.json
+# Registros y basura del sistema.
+*.log
+Thumbs.db
+desktop.ini

@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Aprender a programar</title>
+    <link rel="stylesheet" href="css/estilos.css" />
+  </head>
+  <body>
+    <header class="cabecera">
+      <button
+        id="boton-menu"
+        class="boton cabecera__menu"
+        aria-controls="menu"
+        aria-expanded="false"
+        hidden
+      >
+        <span aria-hidden="true">☰</span> Lecciones
+      </button>
+      <!-- Migas de pan: "Aprender a programar" (enlace al inicio) › nombre de la ruta -->
+      <nav class="migas" aria-label="Ubicación">
+        <a id="miga-inicio" href="#">Aprender a programar</a>
+        <span id="miga-separador" class="migas__separador" aria-hidden="true" hidden>›</span>
+        <span id="miga-ruta" class="migas__ruta" hidden></span>
+      </nav>
+      <div id="avance" class="avance" hidden>
+        <div
+          id="avance-barra"
+          class="barra"
+          role="progressbar"
+          aria-label="Avance en esta ruta"
+          aria-valuemin="0"
+        >
+          <div class="barra__relleno"></div>
+        </div>
+        <span id="avance-texto"></span>
+      </div>
+    </header>
+
+    <p id="aviso" class="aviso" role="status" hidden>
+      No pudimos guardar tu avance en este navegador. Puedes seguir practicando, pero se perderá
+      al cerrar la página.
+    </p>
+
+    <!-- Vista 1: el inicio, con todas las rutas de aprendizaje -->
+    <main id="vista-inicio" class="inicio" hidden>
+      <header class="saludo">
+        <p id="inicio-saludo" class="saludo__hora"></p>
+        <h1 id="inicio-titulo" tabindex="-1">Aprender a programar</h1>
+        <p id="inicio-resumen" class="inicio__resumen"></p>
+      </header>
+
+      <section id="inicio-estadisticas" class="estadisticas" aria-label="Tus números"></section>
+
+      <section id="inicio-continuar" aria-label="Continúa donde ibas"></section>
+
+      <section class="seccion" aria-labelledby="titulo-actividad">
+        <h2 id="titulo-actividad" class="seccion__titulo">Tu actividad</h2>
+        <div id="inicio-actividad"></div>
+      </section>
+
+      <section class="seccion" aria-labelledby="titulo-rutas">
+        <h2 id="titulo-rutas" class="seccion__titulo">Tu camino</h2>
+        <p class="inicio__intro">
+          Las rutas van en cinco etapas, en el orden que más te sirve. Cada ruta va paso a paso:
+          una idea corta, una práctica y un reto. Toca una etapa para abrirla o cerrarla. Tu
+          avance se guarda solo, en este navegador.
+        </p>
+        <ol id="lista-rutas" class="caminos"></ol>
+        <a class="mapa-enlace" href="#mapa">
+          <strong>¿Cómo se conecta todo?</strong>
+          <span>Mira cómo se unen los lenguajes, qué puedes crear y qué ve una carrera.</span>
+          <span class="mapa-enlace__ir" aria-hidden="true">Ver el mapa del oficio →</span>
+        </a>
+        <a class="mapa-enlace" href="#certificados">
+          <strong>¿Quieres un certificado?</strong>
+          <span>Certificados gratis de estos temas y qué rutas de la app te preparan para cada uno.</span>
+          <span class="mapa-enlace__ir" aria-hidden="true">Ver los certificados gratis →</span>
+        </a>
+      </section>
+
+      <section id="seccion-logros" class="seccion" aria-labelledby="titulo-logros">
+        <h2 id="titulo-logros" class="seccion__titulo">Logros</h2>
+        <ul id="lista-logros" class="logros"></ul>
+      </section>
+    </main>
+
+    <!-- Vista del mapa: "Mapa del oficio" (#mapa). Lo pinta js/mapa.js -->
+    <main id="vista-mapa" class="inicio mapa" hidden></main>
+
+    <!-- Vista de certificados gratis (#certificados). Lo pinta js/certificados.js -->
+    <main id="vista-certificados" class="inicio mapa" hidden></main>
+
+    <!-- Vista 2: una ruta abierta, con sus lecciones y el editor -->
+    <div id="vista-curso" hidden>
+      <!-- Encabezado de la ruta: el color y el ícono vienen de data-ruta (lo pone app.js) -->
+      <header class="curso-cabecera">
+        <span id="curso-icono" class="icono-ruta" aria-hidden="true"></span>
+        <div class="curso-cabecera__texto">
+          <p id="curso-ruta" class="curso-cabecera__ruta"></p>
+          <p id="curso-posicion" class="curso-cabecera__posicion"></p>
+        </div>
+        <div id="curso-anillo" class="curso-cabecera__anillo"></div>
+      </header>
+
+      <div class="pagina">
+      <nav id="menu" class="menu" aria-label="Lecciones">
+        <ol id="lista-lecciones" class="menu__lista"></ol>
+        <button id="boton-borrar" class="boton boton--discreto">
+          Borrar mi progreso en esta ruta
+        </button>
+      </nav>
+
+      <main class="contenido">
+        <ol id="pestanas" class="pestanas" aria-label="Pasos de la lección"></ol>
+
+        <article class="explicacion">
+          <p id="paso-ubicacion" class="explicacion__ubicacion"></p>
+          <h1 id="paso-titulo" tabindex="-1"></h1>
+          <div id="paso-texto"></div>
+        </article>
+
+        <!-- Material de consulta del paso. Solo aparece si el motor de la ruta
+             tiene algo que mostrar (en SQL, las tablas de la base de datos). -->
+        <details id="referencia" class="referencia" open hidden>
+          <summary>Las tablas de esta base de datos</summary>
+          <div id="referencia-contenido" class="referencia__contenido"></div>
+        </details>
+
+        <section class="taller" aria-label="Editor de código">
+          <div class="editor">
+            <div class="editor__barra">
+              <span id="editor-archivo" class="editor__archivo"></span>
+              <span id="editor-lenguaje" class="editor__lenguaje"></span>
+            </div>
+            <div class="editor__cuerpo">
+              <pre id="numeros" class="editor__numeros" aria-hidden="true"></pre>
+              <!-- El "lienzo" tiene dos capas del mismo tamaño: abajo el código
+                   con colores (solo para ver) y encima el cuadro donde se escribe,
+                   con la letra transparente. -->
+              <div class="editor__lienzo">
+                <pre id="resaltado" class="editor__capa" aria-hidden="true"></pre>
+                <textarea
+                  id="codigo"
+                  class="editor__texto"
+                  aria-label="Tu código"
+                  aria-describedby="ayuda-teclado"
+                  wrap="off"
+                  spellcheck="false"
+                  autocapitalize="off"
+                  autocomplete="off"
+                  autocorrect="off"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="acciones">
+            <button id="boton-ejecutar" class="boton boton--principal">▶ Ejecutar</button>
+            <button id="boton-pista" class="boton">Dame una pista</button>
+            <button id="boton-reiniciar" class="boton boton--discreto">Reiniciar código</button>
+          </div>
+          <!-- No se ve: es para que los lectores de pantalla anuncien "Cargando Python…" -->
+          <p id="estado-ejecucion" class="solo-lectores" role="status"></p>
+          <p id="ayuda-teclado" class="ayuda">
+            Atajos: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> ejecuta. <kbd>Tab</kbd> agrega espacios;
+            para salir del editor con el teclado presiona <kbd>Esc</kbd> y luego <kbd>Tab</kbd>.
+          </p>
+
+          <div id="pistas" class="pistas" aria-live="polite"></div>
+
+          <div id="resultados" class="resultados">
+            <!-- Solo se ve si el motor de la ruta tiene vistaPrevia: true (páginas web).
+                 Sin allow-same-origin: el código del estudiante no puede tocar la
+                 página ni su progreso guardado. -->
+            <section id="zona-vista" class="panel panel--vista" hidden>
+              <h2 class="panel__titulo">Vista previa</h2>
+              <p id="vista-vacia" class="vista__vacia">Presiona Ejecutar para ver tu página.</p>
+              <iframe
+                id="vista-previa"
+                class="vista__marco"
+                title="Vista previa de tu página"
+                sandbox="allow-scripts"
+                hidden
+              ></iframe>
+            </section>
+
+            <section class="panel panel--consola">
+              <h2 class="panel__titulo">Consola</h2>
+              <pre id="consola" class="consola" aria-live="polite"></pre>
+              <!-- Aquí van las tablas que devuelve una consulta SQL -->
+              <div id="tablas" class="tablas"></div>
+              <p id="error" class="error" role="alert" hidden></p>
+            </section>
+
+            <section id="zona-pruebas" class="panel">
+              <h2 class="panel__titulo">
+                Pruebas <span id="pruebas-resumen" class="panel__resumen"></span>
+              </h2>
+              <ul id="pruebas" class="pruebas" aria-live="polite"></ul>
+            </section>
+          </div>
+
+          <div id="felicitacion" class="felicitacion" role="status" hidden></div>
+        </section>
+
+        <footer class="navegacion">
+          <button id="boton-anterior" class="boton">← Anterior</button>
+          <button id="boton-siguiente" class="boton">Siguiente →</button>
+        </footer>
+      </main>
+      </div>
+    </div>
+
+    <!-- Scripts clásicos (sin módulos). El orden importa: cada archivo usa lo
+         que definieron los anteriores.
+         1. Herramientas y registros  2. Motores  3. Rutas y lecciones  4. Interfaz -->
+    <script src="js/formato.js"></script>
+    <script src="js/iconos.js"></script>
+    <script src="js/resaltado.js"></script>
+    <script src="js/progreso.js"></script>
+    <script src="js/logros.js"></script>
+    <script src="js/rutas.js"></script>
+    <script src="js/motores.js"></script>
+    <script src="js/trabajadores.js"></script>
+
+    <script src="js/api-tienda.js"></script>
+    <script src="js/evaluador.js"></script>
+    <script src="js/ejecutor.js"></script>
+    <script src="js/motor-python.js"></script>
+    <script src="js/motor-sql.js"></script>
+    <script src="js/motor-web.js"></script>
+    <script src="js/terminal-evaluador.js"></script>
+    <script src="js/motor-terminal.js"></script>
+
+    <script src="rutas/catalogo.js"></script>
+    <script src="rutas/javascript/01-hola-mundo.js"></script>
+    <script src="rutas/javascript/02-variables.js"></script>
+    <script src="rutas/javascript/03-numeros.js"></script>
+    <script src="rutas/javascript/04-textos.js"></script>
+    <script src="rutas/javascript/05-comparaciones.js"></script>
+    <script src="rutas/javascript/06-decisiones.js"></script>
+    <script src="rutas/javascript/07-funciones.js"></script>
+    <script src="rutas/javascript/08-arreglos.js"></script>
+    <script src="rutas/javascript/09-bucles.js"></script>
+    <script src="rutas/javascript/10-objetos.js"></script>
+    <script src="rutas/javascript/11-metodos-arreglos.js"></script>
+    <script src="rutas/javascript/12-datos-json.js"></script>
+    <script src="rutas/javascript/13-desestructuracion.js"></script>
+    <script src="rutas/javascript/14-clases.js"></script>
+    <script src="rutas/javascript/15-errores.js"></script>
+    <script src="rutas/javascript/16-reduce-ordenar.js"></script>
+    <script src="rutas/javascript/17-repaso.js"></script>
+    <script src="rutas/javascript/18-async-await.js"></script>
+    <script src="rutas/javascript/19-fetch.js"></script>
+    <script src="rutas/javascript/20-repaso-async.js"></script>
+    <script src="rutas/python/01-hola-python.js"></script>
+    <script src="rutas/python/02-variables.js"></script>
+    <script src="rutas/python/03-numeros.js"></script>
+    <script src="rutas/python/04-textos.js"></script>
+    <script src="rutas/python/05-comparaciones.js"></script>
+    <script src="rutas/python/06-decisiones.js"></script>
+    <script src="rutas/python/07-funciones.js"></script>
+    <script src="rutas/python/08-listas.js"></script>
+    <script src="rutas/python/09-bucles.js"></script>
+    <script src="rutas/python/10-diccionarios.js"></script>
+    <script src="rutas/python/11-datos.js"></script>
+    <script src="rutas/python/12-modulos-json.js"></script>
+    <script src="rutas/python/13-errores.js"></script>
+    <script src="rutas/python/14-clases.js"></script>
+    <script src="rutas/python/15-comprensiones.js"></script>
+    <script src="rutas/python/16-funciones-avanzadas.js"></script>
+    <script src="rutas/python/17-repaso.js"></script>
+    <script src="rutas/sql/00-base-tienda.js"></script>
+    <script src="rutas/sql/01-hola-sql.js"></script>
+    <script src="rutas/sql/02-filtrar.js"></script>
+    <script src="rutas/sql/03-condiciones.js"></script>
+    <script src="rutas/sql/04-ordenar.js"></script>
+    <script src="rutas/sql/05-calcular.js"></script>
+    <script src="rutas/sql/06-resumir.js"></script>
+    <script src="rutas/sql/07-agrupar.js"></script>
+    <script src="rutas/sql/08-unir.js"></script>
+    <script src="rutas/sql/09-unir-mas.js"></script>
+    <script src="rutas/sql/10-insertar.js"></script>
+    <script src="rutas/sql/11-actualizar-borrar.js"></script>
+    <script src="rutas/sql/12-crear-tablas.js"></script>
+    <script src="rutas/sql/13-left-join.js"></script>
+    <script src="rutas/sql/14-subconsultas.js"></script>
+    <script src="rutas/sql/15-case-funciones.js"></script>
+    <script src="rutas/sql/16-vistas-claves.js"></script>
+    <script src="rutas/sql/17-repaso.js"></script>
+    <script src="rutas/sql/18-postgresql.js"></script>
+    <script src="rutas/sql/19-bash.js"></script>
+    <script src="rutas/ia/00-modulo-ia.js"></script>
+    <script src="rutas/ia/01-como-piensa.js"></script>
+    <script src="rutas/ia/02-tokens-y-costo.js"></script>
+    <script src="rutas/ia/03-primer-mensaje.js"></script>
+    <script src="rutas/ia/04-instrucciones-claras.js"></script>
+    <script src="rutas/ia/05-ejemplos.js"></script>
+    <script src="rutas/ia/06-respuestas-json.js"></script>
+    <script src="rutas/ia/07-no-creas-todo.js"></script>
+    <script src="rutas/ia/08-memoria.js"></script>
+    <script src="rutas/ia/09-herramientas.js"></script>
+    <script src="rutas/ia/10-medir.js"></script>
+    <script src="rutas/ia/11-api-mensajes.js"></script>
+    <script src="rutas/ia/12-tool-use-api.js"></script>
+    <script src="rutas/ia/13-mcp.js"></script>
+    <script src="rutas/con-ia/00-modulo-agente.js"></script>
+    <script src="rutas/con-ia/01-que-es-un-agente.js"></script>
+    <script src="rutas/con-ia/02-herramientas.js"></script>
+    <script src="rutas/con-ia/03-el-ciclo.js"></script>
+    <script src="rutas/con-ia/04-pedir-codigo-bien.js"></script>
+    <script src="rutas/con-ia/05-revisar-lo-que-entrega-la-ia.js"></script>
+    <script src="rutas/con-ia/06-las-pruebas-son-tu-red.js"></script>
+    <script src="rutas/con-ia/07-el-contexto.js"></script>
+    <script src="rutas/con-ia/08-cuando-se-equivoca.js"></script>
+    <script src="rutas/con-ia/09-caso-real-esta-app.js"></script>
+    <script src="rutas/con-ia/10-repaso-y-uso-responsable.js"></script>
+    <script src="rutas/fundamentos/01-binario.js"></script>
+    <script src="rutas/fundamentos/02-logica-booleana.js"></script>
+    <script src="rutas/fundamentos/03-busqueda.js"></script>
+    <script src="rutas/fundamentos/04-cuanto-tarda.js"></script>
+    <script src="rutas/fundamentos/05-recursion.js"></script>
+    <script src="rutas/fundamentos/06-pilas-y-colas.js"></script>
+    <script src="rutas/fundamentos/07-tablas-hash.js"></script>
+    <script src="rutas/fundamentos/08-ordenamiento.js"></script>
+    <script src="rutas/fundamentos/09-arboles-y-grafos.js"></script>
+    <script src="rutas/fundamentos/10-repaso.js"></script>
+    <script src="rutas/web/01-hola-html.js"></script>
+    <script src="rutas/web/02-listas-enlaces.js"></script>
+    <script src="rutas/web/03-imagenes-atributos.js"></script>
+    <script src="rutas/web/04-estructura.js"></script>
+    <script src="rutas/web/05-tablas.js"></script>
+    <script src="rutas/web/06-formularios.js"></script>
+    <script src="rutas/web/07-css-colores.js"></script>
+    <script src="rutas/web/08-css-texto-espacios.js"></script>
+    <script src="rutas/web/09-css-flexbox.js"></script>
+    <script src="rutas/web/10-javascript-pagina.js"></script>
+    <script src="rutas/web/11-css-grid.js"></script>
+    <script src="rutas/web/12-diseno-adaptable.js"></script>
+    <script src="rutas/web/13-accesibilidad.js"></script>
+    <script src="rutas/proyectos/01-guardar-con-git.js"></script>
+    <script src="rutas/proyectos/02-catalogo-tienda.js"></script>
+    <script src="rutas/proyectos/03-asistente-resenas.js"></script>
+    <script src="rutas/proyectos/04-portafolio.js"></script>
+    <script src="rutas/proyectos/05-tienda-completa.js"></script>
+    <script src="rutas/datos/01-numpy.js"></script>
+    <script src="rutas/datos/02-series-dataframe.js"></script>
+    <script src="rutas/datos/03-leer-csv.js"></script>
+    <script src="rutas/datos/04-seleccionar.js"></script>
+    <script src="rutas/datos/05-limpiar.js"></script>
+    <script src="rutas/datos/06-agrupar.js"></script>
+    <script src="rutas/datos/07-unir.js"></script>
+    <script src="rutas/datos/08-fechas.js"></script>
+    <script src="rutas/datos/09-estadistica.js"></script>
+    <script src="rutas/datos/10-repaso.js"></script>
+    <script src="rutas/ml/01-aprender-de-datos.js"></script>
+    <script src="rutas/ml/02-validacion.js"></script>
+    <script src="rutas/ml/03-arbol.js"></script>
+    <script src="rutas/ml/04-medir-error.js"></script>
+    <script src="rutas/ml/05-sobreajuste.js"></script>
+    <script src="rutas/ml/06-bosque.js"></script>
+    <script src="rutas/ml/07-regresion-lineal.js"></script>
+    <script src="rutas/ml/08-repaso.js"></script>
+    <script src="rutas/react/00-mini-react.js"></script>
+    <script src="rutas/react/01-crear-elementos.js"></script>
+    <script src="rutas/react/02-componentes.js"></script>
+    <script src="rutas/react/03-props.js"></script>
+    <script src="rutas/react/04-estado-eventos.js"></script>
+    <script src="rutas/react/05-listas-key.js"></script>
+    <script src="rutas/react/06-repaso-carrito.js"></script>
+    <script src="rutas/ciberseguridad/01-triada-cia.js"></script>
+    <script src="rutas/ciberseguridad/02-contrasenas.js"></script>
+    <script src="rutas/ciberseguridad/03-phishing.js"></script>
+    <script src="rutas/ciberseguridad/04-malware-respaldos.js"></script>
+    <script src="rutas/ciberseguridad/05-dos-factores.js"></script>
+    <script src="rutas/ciberseguridad/06-redes-https.js"></script>
+    <script src="rutas/ciberseguridad/07-repaso-don-pepe.js"></script>
+    <script src="rutas/proyectos-ia/00-modulo-proyecto.js"></script>
+    <script src="rutas/proyectos-ia/01-el-mapa-del-proyecto.js"></script>
+    <script src="rutas/proyectos-ia/02-archivos-de-configuracion.js"></script>
+    <script src="rutas/proyectos-ia/03-dependencias-y-versiones.js"></script>
+    <script src="rutas/proyectos-ia/04-frameworks-sin-miedo.js"></script>
+    <script src="rutas/proyectos-ia/05-variables-de-entorno.js"></script>
+    <script src="rutas/proyectos-ia/06-frontend-y-backend.js"></script>
+    <script src="rutas/proyectos-ia/07-como-llega-a-internet.js"></script>
+    <script src="rutas/proyectos-ia/08-dirigir-a-la-ia.js"></script>
+    <script src="rutas/proyectos-ia/09-revisar-y-cambiar.js"></script>
+    <script src="rutas/proyectos-ia/10-repaso.js"></script>
+    <script src="rutas/tu-computador/01-herramientas.js"></script>
+    <script src="rutas/tu-computador/02-la-terminal.js"></script>
+    <script src="rutas/tu-computador/03-instalar-python-y-node.js"></script>
+    <script src="rutas/tu-computador/04-vs-code.js"></script>
+    <script src="rutas/tu-computador/05-entornos-y-dependencias.js"></script>
+    <script src="rutas/tu-computador/06-git-y-github.js"></script>
+    <script src="rutas/tu-computador/07-claude-code.js"></script>
+    <script src="rutas/tu-computador/08-tu-pagina-publicada.js"></script>
+    <script src="rutas/oficio/01-leer-codigo-ajeno.js"></script>
+    <script src="rutas/oficio/02-depurar.js"></script>
+    <script src="rutas/oficio/03-apis-rest.js"></script>
+    <script src="rutas/oficio/04-validar.js"></script>
+    <script src="rutas/oficio/05-inyeccion-sql.js"></script>
+    <script src="rutas/oficio/06-xss-claves-secretos.js"></script>
+    <script src="rutas/oficio/07-datos-de-clientes.js"></script>
+    <script src="rutas/oficio/08-git-en-equipo.js"></script>
+    <script src="rutas/oficio/09-del-pedido-a-tareas.js"></script>
+    <script src="rutas/oficio/10-repaso-un-ticket.js"></script>
+    <script src="rutas/primer-trabajo/01-que-busca-una-empresa.js"></script>
+    <script src="rutas/primer-trabajo/02-portafolio.js"></script>
+    <script src="rutas/primer-trabajo/03-github.js"></script>
+    <script src="rutas/primer-trabajo/04-hoja-de-vida.js"></script>
+    <script src="rutas/primer-trabajo/05-entrevista-ejercicios.js"></script>
+    <script src="rutas/primer-trabajo/06-entrevista-conceptos.js"></script>
+    <script src="rutas/primer-trabajo/07-negocios-pequenos.js"></script>
+    <script src="rutas/primer-trabajo/08-cotizar.js"></script>
+    <script src="rutas/primer-trabajo/09-ia-en-el-trabajo.js"></script>
+    <script src="rutas/primer-trabajo/10-plan-90-dias.js"></script>
+    <script src="rutas/puentes.js"></script>
+
+    <script src="js/etapas.js"></script>
+    <script src="js/mapa.js"></script>
+    <script src="js/certificados.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
