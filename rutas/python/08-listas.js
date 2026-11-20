@@ -8,9 +8,11 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Varios valores en una variable',
         texto: [
-          'Una **lista** guarda varios valores en orden. Se escribe entre corchetes `[ ]`, con los valores separados por comas.',
-          'Cada valor tiene una posición, y se cuenta **desde 0**: el primero es `frutas[0]`. Con `-1` se pide el último.',
-          '`len()` dice cuántos valores hay y `.append()` agrega uno al final.',
+          'Para guardar tres frutas podrías crear `fruta1`, `fruta2` y `fruta3`. Pero ¿y si son 100? Mejor guardarlas todas juntas: `frutas = ["mango", "lulo", "guanábana"]`.',
+          'Eso es una **lista**: varios valores guardados en orden dentro de una sola variable. Se escribe entre corchetes `[ ]`, con los valores separados por comas. A cada valor se le llama **elemento**.',
+          'Cada elemento tiene una **posición** (en inglés, índice), y se cuenta **desde 0**: el primero es `frutas[0]`, el segundo `frutas[1]`. Con `-1` se pide el último, sin importar cuántos haya.',
+          '`len(frutas)` dice cuántos elementos hay. `frutas.append("maracuyá")` agrega uno al final: "append" significa "añadir".',
+          '**Error común:** pedir una posición que no existe. La lista de arriba tiene 3 frutas, en las posiciones 0, 1 y 2. Si pides `frutas[3]` verás `IndexError: list index out of range` (posición fuera de la lista). Recuerda: el último está en `len(frutas) - 1`, o simplemente en `-1`.',
         ],
         codigo: [
           'frutas = ["mango", "lulo", "guanábana"]',
@@ -30,20 +32,30 @@ globalThis.Rutas.agregarLeccion(
           'Crea una lista `ciudades` con los nombres de tres ciudades de Colombia.',
           'Muestra la primera ciudad y después muestra cuántas ciudades hay usando `len()`.',
         ],
-        codigo: '# Crea aquí la lista ciudades\n',
+        codigo: [
+          '# TODO: crea la lista ciudades con tres ciudades entre corchetes',
+          '',
+          '# TODO: muestra la primera ciudad (posición 0)',
+          '',
+          '# TODO: muestra cuántas ciudades hay, con len()',
+          '',
+        ].join('\n'),
         pruebas: [
           {
-            descripcion: 'ciudades es una lista con 3 elementos',
+            descripcion: 'ciudades es una lista con 3 ciudades',
             condicion: 'isinstance(ciudades, list) and len(ciudades) == 3',
           },
-          { descripcion: 'Muestras la primera ciudad', condicion: 'mostrado(ciudades[0])' },
-          { descripcion: 'Muestras cuántas hay (3)', condicion: 'mostrado(3)' },
-          { descripcion: 'Usas len()', condicion: 're.search(r"\\blen\\s*\\(", codigo) is not None' },
+          { descripcion: 'La consola muestra la primera ciudad de la lista', condicion: 'mostrado(ciudades[0])' },
+          { descripcion: 'La consola muestra la cantidad de ciudades (3)', condicion: 'mostrado(3)' },
+          {
+            descripcion: 'La cantidad sale de len(ciudades), no escrita a mano',
+            condicion: 're.search(r"\\blen\\s*\\(\\s*ciudades", codigo) is not None',
+          },
         ],
         pistas: [
-          'La lista se crea así: `ciudades = ["Cali", "Tunja", "Leticia"]`',
-          'La primera está en la posición 0: `print(ciudades[0])`',
-          'La cantidad: `print(len(ciudades))`',
+          'Una lista va entre corchetes y sus textos van entre comillas, separados por comas, como `frutas` en el ejemplo.',
+          'La primera ciudad está en la posición `0`, y `len()` cuenta los elementos.',
+          'Casi listo: `ciudades = ["Cali", "Tunja", "Leticia"]`, luego `print(ciudades[0])` y `print(len(...))`',
         ],
         solucion: [
           'ciudades = ["Cali", "Tunja", "Leticia"]',
@@ -61,13 +73,17 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           'mercado = ["arroz", "panela"]',
           '',
-          '# 1. Agrega "café" y "huevos"',
+          '# TODO 1: agrega "café" y después "huevos" con .append()',
           '',
-          '# 2. Guarda el último elemento en la variable ultimo',
+          '# TODO 2: guarda en ultimo el último elemento (posición -1)',
           '',
         ].join('\n'),
         pruebas: [
-          { descripcion: 'mercado tiene 4 elementos', condicion: 'len(mercado) == 4' },
+          { descripcion: 'El mercado queda con 4 productos', condicion: 'len(mercado) == 4' },
+          {
+            descripcion: 'Los productos se agregan con .append(), sin reescribir la lista',
+            condicion: 'codigo.count(".append(") >= 2',
+          },
           {
             descripcion: 'Los dos últimos son "café" y "huevos"',
             condicion: 'mercado[2:] == ["café", "huevos"]',
@@ -79,9 +95,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Cada elemento se agrega con su propio append: `mercado.append("café")`',
-          'La posición `-1` siempre es el último elemento.',
-          '`ultimo = mercado[-1]`',
+          'Primero agrega los dos productos; después pide el último. Si lo haces al revés, el último sería "panela".',
+          'Cada producto se agrega con su propio `.append()`, y la posición `-1` siempre es el último elemento.',
+          'Casi listo: `mercado.append("café")`, otra línea igual para los huevos y `ultimo = mercado[...]`',
         ],
         solucion: [
           'mercado = ["arroz", "panela"]',

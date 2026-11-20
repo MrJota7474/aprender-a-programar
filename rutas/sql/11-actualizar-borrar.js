@@ -8,9 +8,11 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'UPDATE y DELETE',
         texto: [
-          '`UPDATE` cambia datos que ya existen: con `SET` dices qué columna y qué valor nuevo, y con `WHERE` a cuáles filas.',
-          '`DELETE FROM` borra filas completas, también según un `WHERE`.',
-          '**Lo más importante de esta lección:** un `UPDATE` o un `DELETE` sin `WHERE` afecta a TODAS las filas de la tabla. En una base real eso puede significar perder los datos de un negocio. Aquí no pasa nada porque la base se reinicia, así que es el mejor lugar para acostumbrarte a escribir siempre el `WHERE`.',
+          'El tinto subió a 2200 y hay productos agotados que ya no se venden. Ejecuta el código y mira la tabla: el tinto tiene precio nuevo y los agotados desaparecieron.',
+          '`UPDATE` ("actualizar") cambia datos que ya existen. Con `SET` ("poner") dices qué columna y qué valor nuevo, y con `WHERE` a cuáles filas.',
+          '`DELETE FROM` ("borrar de") borra filas completas, también según un `WHERE`.',
+          '**Ejemplo explicado línea por línea:** `UPDATE productos` elige la tabla. `SET precio = 2200` dice qué cambiar. `WHERE nombre = \'Tinto\'` limita el cambio a la fila del tinto. Después, `DELETE FROM productos WHERE existencias = 0` borra todas las filas sin existencias.',
+          '**Error común:** olvidar el `WHERE`. Un `UPDATE` o un `DELETE` sin `WHERE` no da ningún mensaje de error: simplemente afecta a TODAS las filas. `UPDATE productos SET precio = 2200;` deja todos los productos a 2200. En una base real eso puede significar perder los datos de un negocio. Aquí la base se reinicia, así que es el mejor lugar para acostumbrarte a escribir siempre el `WHERE`.',
         ],
         codigo: [
           'UPDATE productos',
@@ -30,7 +32,13 @@ globalThis.Rutas.agregarLeccion(
           'Cambia el precio de la `Panela` a `4500`.',
           'Solo debe cambiar ese producto: los demás precios quedan igual.',
         ],
-        codigo: ['-- Cambia aquí el precio de la Panela', '', '', 'SELECT * FROM productos;'].join('\n'),
+        codigo: [
+          '-- TODO: con UPDATE, pon el precio en 4500',
+          "-- TODO: con WHERE, solo para el producto de nombre 'Panela'",
+          '',
+          '',
+          'SELECT * FROM productos;',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'La Panela ahora cuesta 4500',
@@ -40,12 +48,12 @@ globalThis.Rutas.agregarLeccion(
             descripcion: 'Los demás precios no cambiaron',
             condicion: `consulta("SELECT SUM(precio) AS suma FROM productos WHERE nombre <> 'Panela'")[0].suma === 41000`,
           },
-          { descripcion: 'Usas WHERE', condicion: '/\\bWHERE\\b/.test(codigo)' },
+          { descripcion: 'Usas WHERE para limitar el cambio', condicion: '/\\bWHERE\\b/.test(codigo)' },
         ],
         pistas: [
-          'La forma es `UPDATE productos SET ... WHERE ...;`',
-          'Lo que cambia: `SET precio = 4500`',
-          'A cuál fila: `WHERE nombre = \'Panela\'`',
+          'Es como el cambio del tinto en el ejemplo, con otro producto y otro precio.',
+          'La forma es `UPDATE productos SET ... WHERE ...;` El nombre va entre comillas simples.',
+          'Casi listo: `UPDATE productos SET precio = 4500 WHERE nombre = ...;`',
         ],
         solucion: [
           'UPDATE productos',
@@ -64,9 +72,10 @@ globalThis.Rutas.agregarLeccion(
           '2. El pedido con `id` 10 fue cancelado. Bórralo de la tabla `pedidos`.',
         ],
         codigo: [
-          '-- 1. Suma 24 a las existencias del Bocadillo veleño',
+          '-- TODO 1: UPDATE que sume 24 a las existencias del Bocadillo veleño',
+          '--         (usa existencias = existencias + 24, con su WHERE)',
           '',
-          '-- 2. Borra el pedido 10',
+          '-- TODO 2: DELETE que borre de pedidos solo el pedido con id 10',
           '',
           '',
           'SELECT * FROM productos;',
@@ -91,9 +100,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'La primera: `UPDATE productos SET existencias = existencias + 24 WHERE nombre = \'Bocadillo veleño\';`',
-          'La segunda empieza con `DELETE FROM pedidos`',
-          'Y termina con `WHERE id = 10;` Sin ese `WHERE` se borrarían todos los pedidos.',
+          'Son dos instrucciones separadas, cada una con su propio `WHERE` y su punto y coma.',
+          'La primera es un `UPDATE` con `SET existencias = existencias + 24`. La segunda empieza con `DELETE FROM pedidos`.',
+          'Casi listo: `UPDATE productos SET existencias = existencias + 24 WHERE nombre = \'Bocadillo veleño\';` y `DELETE FROM pedidos WHERE id = ...;`',
         ],
         solucion: [
           'UPDATE productos',

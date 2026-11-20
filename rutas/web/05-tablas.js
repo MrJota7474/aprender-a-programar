@@ -14,6 +14,9 @@ globalThis.Rutas.agregarLeccion(
           'Cuando los datos tienen filas y columnas, como una lista de precios, usa una **tabla**. Se arma con cuatro etiquetas: `<table>` es la tabla completa, `<tr>` es una fila (de "table row"), `<th>` es una celda de encabezado y `<td>` es una celda de datos.',
           'Se construye **fila por fila**: dentro de la `<table>` va un `<tr>` por cada fila, y dentro de cada `<tr>` una celda por cada columna. Es buena práctica que todas las filas tengan la misma cantidad de celdas: el navegador tolera filas desiguales, pero la tabla se ve desordenada.',
           'La primera fila suele ser de encabezados (`<th>`), que el navegador pone en negrita y centrados. Las demás filas llevan `<td>`. Cierra siempre cada celda, `</td>` y `</th>`.',
+          '**Ejemplo explicado línea por línea:**',
+          'Líneas 2 a 5: la primera fila, con dos encabezados: "Producto" y "Precio". Líneas 6 a 9: la segunda fila, con dos datos: "Pan" y "$300". Cada celda queda debajo de su encabezado porque están en el mismo orden.',
+          '**Error común:** poner un `<td>` suelto, sin su `<tr>`, o una fila con menos celdas. No siempre sale un error: la tabla simplemente se ve corrida, con datos debajo del encabezado equivocado. Cuenta las celdas de cada fila: deben ser las mismas.',
           'Ejecuta y mira cómo cada `<tr>` se vuelve una fila.',
         ],
         codigo: [
@@ -47,7 +50,8 @@ globalThis.Rutas.agregarLeccion(
           '    <th>Producto</th>',
           '    <th>Precio</th>',
           '  </tr>',
-          '  <!-- Agrega tus filas debajo de esta línea -->',
+          '  <!-- TODO: agrega aquí tres filas tr. Cada una lleva dos td: -->',
+          '  <!-- el nombre del producto y su precio. -->',
           '</table>',
         ].join('\n'),
         pruebas: [
@@ -120,6 +124,8 @@ globalThis.Rutas.agregarLeccion(
           '    <td>4</td>',
           '    <td>$4.200</td>',
           '  </tr>',
+          '  <!-- TODO: al final de cada fila falta una celda: <th>Total</th> en la -->',
+          '  <!-- primera y un td con el total en las de pan y leche. -->',
           '</table>',
         ].join('\n'),
         pruebas: [

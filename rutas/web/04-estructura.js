@@ -14,6 +14,8 @@ globalThis.Rutas.agregarLeccion(
           'Una página bien hecha no es una fila de etiquetas sueltas: está dividida en zonas, y cada zona tiene su propia etiqueta. Se llaman **etiquetas semánticas** porque su nombre dice para qué sirven.',
           '`<header>` es el encabezado: arriba, con el título y el nombre del sitio. `<nav>` es la zona de navegación, con los enlaces a las otras páginas. `<main>` guarda el contenido principal. `<footer>` es el pie de página, abajo, con datos como la dirección o el teléfono.',
           'Estas etiquetas no cambian cómo se ve la página; sirven para que **el código se entienda**, y para que los lectores de pantalla y Google sepan qué es cada parte. Todas van dentro del `<body>`.',
+          'Piensa en un periódico: arriba el nombre (header), luego las secciones (nav), en el medio las noticias (main) y abajo los datos de contacto (footer).',
+          '**Error común:** cerrar las zonas en desorden. Si abres `<main>` y adentro `<p>`, primero se cierra `</p>` y después `</main>`, como cajas una dentro de otra. Si escribes mal el nombre del cierre, como `</heder>`, verás: `Encontré </heder>, pero antes no hay ninguna <heder> abierta.`',
           'Ejecuta y fíjate en cómo cada zona envuelve su contenido.',
         ],
         codigo: [
@@ -40,7 +42,9 @@ globalThis.Rutas.agregarLeccion(
           'Envuelve el `<h1>` en un `<header>` y envuelve el `<p>` en un `<main>`. Envolver es poner la etiqueta de apertura antes y la de cierre después.',
         ],
         codigo: [
+          '<!-- TODO 1: envuelve este h1 en un header. -->',
           '<h1>Tienda Don Pepe</h1>',
+          '<!-- TODO 2: envuelve este párrafo en un main. -->',
           '<p>Pan fresco, leche y tinto todos los días.</p>',
         ].join('\n'),
         pruebas: [
@@ -79,10 +83,14 @@ globalThis.Rutas.agregarLeccion(
           'Organízalo así, en este orden: un `<header>` con el título, un `<nav>` con los dos enlaces, un `<main>` con el párrafo de los productos y un `<footer>` con la dirección. No cambies los textos.',
         ],
         codigo: [
+          '<!-- TODO 1: header con el título. -->',
           '<h1>Tienda Don Pepe</h1>',
+          '<!-- TODO 2: nav con los dos enlaces. -->',
           '<a href="#productos">Productos</a>',
           '<a href="#contacto">Contacto</a>',
+          '<!-- TODO 3: main con el párrafo de los productos. -->',
           '<p>Pan fresco, leche y tinto todos los días.</p>',
+          '<!-- TODO 4: footer con la dirección. -->',
           '<p>Calle 10 con Carrera 5</p>',
         ].join('\n'),
         pruebas: [

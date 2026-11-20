@@ -413,6 +413,24 @@ test('formatearTexto escapa el HTML para que no se ejecute', () => {
   );
 });
 
+test('formatearTexto no confunde los ** de un código con negrita', () => {
+  assert.equal(
+    formatearTexto('`**` es potencia: `2 ** 3`'),
+    '<code>**</code> es potencia: <code>2 ** 3</code>'
+  );
+});
+
+test('formatearTexto permite negrita que contiene código con *', () => {
+  assert.equal(formatearTexto('**usa `a*b` siempre**'), '<strong>usa <code>a*b</code> siempre</strong>');
+});
+
+test('formatearTexto escapa el HTML dentro de la negrita y del código, y no deja fingir marcadores', () => {
+  assert.equal(
+    formatearTexto('**<img src=x onerror="alert(1)">** `<b>` \u00000\u0000'),
+    '<strong>&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</strong> <code>&lt;b&gt;</code> 0'
+  );
+});
+
 test('explicarError traduce un nombre que no existe', () => {
   const texto = explicarError({ nombre: 'ReferenceError', mensaje: 'nombr is not defined' });
 
@@ -424,6 +442,18 @@ test('explicarError da ayuda general para errores de sintaxis', () => {
   const texto = explicarError({ nombre: 'SyntaxError', mensaje: 'Unexpected end of input' });
 
   assert.match(texto, /error de escritura/);
+});
+
+test('explicarError no da el consejo de los paréntesis a una palabra reservada ni a un valor que falta', () => {
+  // Mensajes reales de V8 para "let class = 2", "let total = ;" y "let 1precio = 5".
+  const clase = explicarError({ nombre: 'SyntaxError', mensaje: "Unexpected token 'class'" });
+  const vacio = explicarError({ nombre: 'SyntaxError', mensaje: "Unexpected token ';'" });
+  const numero = explicarError({ nombre: 'SyntaxError', mensaje: 'Invalid or unexpected token' });
+
+  assert.match(clase, /let clase = 2/);
+  assert.match(vacio, /let total = 0;/);
+  [clase, vacio].forEach((texto) => assert.doesNotMatch(texto, /if \(edad > 18\)/));
+  assert.match(numero, /empieza con número/);
 });
 
 test('explicarError muestra tal cual el mensaje de tiempo agotado', () => {
@@ -488,4 +518,40 @@ test('fetch con body en un GET falla como el real y se explica', async () => {
     explicarError({ nombre: 'TypeError', mensaje: 'Request with GET/HEAD method cannot have body.' }),
     /method: "POST"/
   );
+});
+
+// ---------- errores comunes, con los mensajes reales de JavaScript ----------
+
+test('explicarError explica los errores comunes de JavaScript con una sugerencia concreta', async () => {
+  const casos = [
+    ['console.log(nombr)', /Usaste "nombr"/],
+    ['print("hola")', /en JavaScript se muestra con console\.log/],
+    ['const a = 1; a = 2;', /créalo con let.*Antes: const total/],
+    ['let a; let a;', /no repitas let/],
+    ['let s = "a"; s.push("b")', /"s\.push" no es una función/],
+    ['let f = []; f.append(1)', /en JavaScript se usa push/],
+    ['let u; u.nombre', /leer "nombre" dentro de un valor vacío \(undefined\)/],
+    ['console.log("hola)', /comillas sin cerrar/],
+    ['if (true { }', /fuera de lugar un "\{"/],
+    ['function f() { console.log(1);', /te falta cerrar una llave/],
+    ['console.log(`hola)', /quedó algo abierto/],
+    ['console.log(y); let y = 1;', /antes de la línea donde la creas/],
+    ['JSON.parse("{a:1}")', /no es un JSON válido/],
+    ['[].reduce((a, b) => a + b)', /valor inicial/],
+    ['function f() { f(); } f();', /caso base/],
+    ['class A {} A()', /new antes/],
+    ['const precio;', /necesita su valor en la misma línea/],
+  ];
+  for (const [codigo, esperado] of casos) {
+    const resultado = await evaluarCodigo(codigo, []);
+    assert.ok(resultado.error, 'debía fallar: ' + codigo);
+    const texto = explicarError(resultado.error);
+    assert.match(texto, esperado, codigo + ' → ' + texto);
+    assert.doesNotMatch(texto, /Algo falló/, codigo);
+  }
+});
+
+test('explicarError dice la línea cuando el error la trae', () => {
+  const texto = explicarError({ nombre: 'ReferenceError', mensaje: 'x is not defined', linea: 7 });
+  assert.match(texto, /^En la línea 7: Usaste "x"/);
 });

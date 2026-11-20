@@ -146,3 +146,28 @@ test('resalta SQL sin importar mayúsculas o minúsculas', () => {
   assert.match(html, /<span class="r-comentario">-- nota<\/span>/);
   assert.doesNotMatch(html, /r-palabra">nombre/);
 });
+
+// ---------- errores comunes, con los mensajes reales de SQLite ----------
+
+test('explicarErrorSql explica los errores comunes con una sugerencia concreta', async () => {
+  const casos = [
+    ['SELECT nombre FORM frutas', /cerca de "frutas".*FROM/],
+    ['SELECT nombr FROM frutas', /No existe una columna llamada "nombr"/],
+    ['SELECT * FROM frutas WHERE nombre = Mango', /comillas simples.*'Bebidas'/],
+    ["SELECT * FROM frutas WHERE nombre = 'Mango", /comilla sin cerrar/],
+    ['SELECT * FROM frutas WHERE', /incompleta/],
+    ['SELECT SUMA(precio) FROM frutas', /no tiene una función llamada SUMA.*SUM\(precio\)/],
+    ["INSERT INTO frutas VALUES (1, 'a')", /3 columnas, pero escribiste 2/],
+    ['INSERT INTO frutas (precio) VALUES (1)', /"frutas\.nombre" es obligatoria/],
+    ['SELECT * FROM frutas WHERE COUNT(*) > 1', /HAVING/],
+    ['SELECT * FROM frutas WHERE id IN (SELECT id, nombre FROM frutas)', /devuelve 2 columnas/],
+    ['SELECT * FROM frutas ORDER BY 9', /solo tiene 3/],
+  ];
+  for (const [codigo, esperado] of casos) {
+    const resultado = await evaluar(codigo);
+    assert.ok(resultado.error, 'debía fallar: ' + codigo);
+    const texto = explicarErrorSql(resultado.error);
+    assert.match(texto, esperado, codigo + ' → ' + texto);
+    assert.doesNotMatch(texto, /Algo falló/, codigo);
+  }
+});

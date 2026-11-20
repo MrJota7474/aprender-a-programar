@@ -11,7 +11,9 @@ globalThis.Rutas.agregarLeccion(
           'Una **vista** es una consulta guardada con un nombre. Se crea con `CREATE VIEW nombre AS SELECT ...` y después se usa como si fuera una tabla: `SELECT * FROM nombre`. No copia datos: cada vez que la consultas, corre la consulta de nuevo y te muestra los datos al día.',
           'Una **clave foránea** conecta una tabla con otra al diseñarlas. `producto_id INTEGER REFERENCES productos(id)` dice: "este valor tiene que ser el `id` de un producto que existe". Así nadie puede guardar un favorito de un producto inventado.',
           'Ojo con un detalle de SQLite: por defecto **no hace cumplir** las claves foráneas. Hay que encenderlas en cada conexión con `PRAGMA foreign_keys = ON;`, antes de insertar datos. Con eso activado, un `INSERT` con un producto que no existe da error.',
-          'Ejecuta el ejemplo: crea una vista, una tabla con clave foránea y consulta las dos.',
+          '**Ejemplo explicado por partes:** `CREATE VIEW productos_caros AS ...` guarda la consulta de los productos de 4000 o más. `PRAGMA foreign_keys = ON;` enciende la revisión de claves foráneas. La tabla `favoritos` dice con `FOREIGN KEY (producto_id) REFERENCES productos (id)` que cada favorito debe apuntar a un producto real. Al final, `SELECT * FROM productos_caros;` usa la vista como si fuera una tabla.',
+          'Ejecuta el ejemplo y mira el resultado de la vista.',
+          '**Error común:** con las claves foráneas encendidas, insertar un `producto_id` que no existe, como 99. SQL responde `FOREIGN KEY constraint failed` (falló la regla de clave foránea). Ese error es bueno: evitó guardar un dato inventado. Revisa qué ids existen en la tabla de productos.',
         ],
         codigo: [
           'CREATE VIEW productos_caros AS',
@@ -41,9 +43,10 @@ globalThis.Rutas.agregarLeccion(
           'Después consúltala con `SELECT * FROM valor_pedidos;` para ver los 10 pedidos.',
         ],
         codigo: [
-          '-- 1. Crea la vista valor_pedidos (pedido, cliente, total)',
+          '-- TODO 1: CREATE VIEW valor_pedidos AS seguido de un SELECT que una',
+          '--         pedidos, clientes y productos, con los alias pedido, cliente y total',
           '',
-          '-- 2. Consúltala',
+          '-- TODO 2: consulta la vista con SELECT * FROM valor_pedidos;',
           '',
         ].join('\n'),
         pruebas: [
@@ -89,13 +92,14 @@ globalThis.Rutas.agregarLeccion(
           'Activa las claves foráneas con `PRAGMA foreign_keys = ON;`, inserta al menos 2 reposiciones de productos que existan y muestra la tabla.',
         ],
         codigo: [
-          '-- 1. Activa las claves foráneas',
+          '-- TODO 1: activa las claves foráneas con PRAGMA (antes de todo)',
           '',
-          '-- 2. Crea la tabla reposiciones',
+          '-- TODO 2: crea la tabla reposiciones con id, producto_id y cantidad,',
+          '--         y una FOREIGN KEY de producto_id hacia productos (id)',
           '',
-          '-- 3. Inserta al menos 2 reposiciones',
+          '-- TODO 3: inserta al menos 2 reposiciones de productos que existan (ids 1 a 10)',
           '',
-          '-- 4. Muestra la tabla',
+          '-- TODO 4: muestra la tabla',
           '',
         ].join('\n'),
         pruebas: [

@@ -11,7 +11,13 @@ globalThis.Rutas.agregarLeccion(
           'Los arreglos traen herramientas que hacen el trabajo de un bucle en una sola línea. Las tres más usadas son `filter`, `map` y `find`.',
           '`filter` se queda con los valores que cumplen una condición, `map` transforma cada valor y `find` devuelve el primero que cumple.',
           'Cada una recibe una **función flecha**: una forma corta de escribir una función. `(precio) => precio > 3000` significa "dado un `precio`, devuelve si es mayor que 3000". Lo que va después de la flecha es lo que se devuelve.',
-          'Ninguna de estas herramientas cambia el arreglo original: devuelven uno nuevo.',
+          'Ninguna de estas herramientas cambia el arreglo original: devuelven uno nuevo. Una herramienta que va pegada a un valor con un punto, como `precios.filter(...)`, se llama **método**.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 3: `filter` le pasa cada precio a la flecha. 4500 > 3000 es `true`: se queda. 2500 > 3000 es `false`: sale. Al final `caros` es `[4500, 8000]`.',
+          'Línea 6: `map` multiplica cada precio por 1.19 (el IVA). El arreglo nuevo tiene los mismos 4 elementos, cada uno transformado.',
+          'Línea 9: `find` revisa en orden y se detiene en el primero que cumple: 1500. Si ninguno cumpliera, daría `undefined`.',
+          'Compara con lo que ya sabías: `filter` hace lo mismo que un `for...of` con un `if` y un `push`, pero en una sola línea.',
+          '**Error común:** poner llaves en la flecha sin `return`. `(precio) => { precio > 3000 }` no devuelve nada, y `filter` termina con un arreglo vacío `[]`. Solución: quita las llaves, `(precio) => precio > 3000`, o escribe `return` adentro.',
         ],
         codigo: [
           'const precios = [4500, 2500, 8000, 1500];',
@@ -36,7 +42,10 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           'const precios = [4500, 2500, 8000, 1500, 3000, 12000];',
           '',
-          '// Crea aquí el arreglo baratos',
+          '// TODO: crea baratos con precios.filter( ... ).',
+          '// Dentro va una función flecha que diga cuándo un precio se queda.',
+          '',
+          '// Para revisar: console.log(baratos); debe mostrar [2500, 1500]',
           '',
         ].join('\n'),
         pruebas: [
@@ -76,7 +85,11 @@ globalThis.Rutas.agregarLeccion(
           '  { nombre: "Empanada", precio: 2500 }',
           '];',
           '',
-          '// Crea aquí la función nombresBaratos',
+          '// TODO 1: crea la función nombresBaratos(lista, maximo).',
+          '// TODO 2: usa filter para quedarte con los que cuestan menos que maximo.',
+          '// TODO 3: usa map sobre ese resultado para sacar solo el nombre, y devuélvelo.',
+          '',
+          '// Para revisar: console.log(nombresBaratos(productos, 3000));',
           '',
         ].join('\n'),
         pruebas: [
@@ -109,8 +122,8 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'No cambia la lista original', condicion: 'productos.length === 4' },
         ],
         pistas: [
-          'Empieza así: `function nombresBaratos(lista, maximo) { ... }`',
-          'Para quedarte con los baratos: `lista.filter((producto) => producto.precio < maximo)`',
+          'Son dos pasos encadenados: primero escoger productos, después transformar cada producto en su nombre.',
+          'Empieza así: `function nombresBaratos(lista, maximo) { ... }`. Para quedarte con los baratos: `lista.filter((producto) => producto.precio < maximo)`',
           'Sobre ese resultado usa `.map((producto) => producto.nombre)` y devuélvelo con `return`.',
         ],
         solucion: [

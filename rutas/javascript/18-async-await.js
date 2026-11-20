@@ -42,6 +42,11 @@ globalThis.Rutas.agregarLeccion(
           'Una **promesa** es ese "ya te aviso": un valor que todavía no está. Se crea con `new Promise((resolver, rechazar) => { ... })`: cuando el trabajo termina llamas a `resolver(valor)`, y si algo sale mal, a `rechazar(error)`. `setTimeout(funcion, ms)` ejecuta una función después de unos milisegundos.',
           'Una función `async` puede usar `await`, que **espera** a que la promesa se cumpla y te entrega su valor. Si la promesa se rechaza, `await` lanza el error: atrápalo con `try` / `catch`, como en la lección de errores.',
           'Fíjate en el orden de lo que se muestra: "Pedido hecho" sale antes que el domicilio, porque el programa no se detiene a esperar hasta que llega al `await`.',
+          '**Ejemplo explicado línea por línea:**',
+          'Líneas 1 a 11: `esperarDomicilio` devuelve una promesa. Adentro, `setTimeout` espera 100 milisegundos (una décima de segundo) y entonces cumple la promesa con "... entregado" o la rechaza si piden pizza.',
+          'Línea 15: `await` detiene **solo** la función `pedir` hasta que llegue el domicilio; el resto del programa sigue. Línea 16 se ejecuta cuando ya hay mensaje.',
+          'Línea 22: arranca el pedido y guarda la promesa en `pendiente`, sin esperar. Línea 23: se muestra de una vez. Línea 24: ahora sí espera a que termine el pedido. Línea 25: pide pizza, la promesa se rechaza y el `catch` muestra el motivo.',
+          '**Error común:** olvidar el `await`. `const mensaje = esperarDomicilio("Arepa");` no guarda el texto sino la promesa sin terminar: al mostrarla verás algo como `Promise { <pending> }` ("pendiente") o `[object Promise]`. Solución: `await esperarDomicilio("Arepa")`, dentro de una función `async`.',
         ],
         codigo: [
           'function esperarDomicilio(producto) {',
@@ -79,8 +84,10 @@ globalThis.Rutas.agregarLeccion(
           'Para esperar, crea una promesa que se cumpla con `setTimeout` y espérala con `await`. Usa `await` (también existe `.then()`, otra forma de esperar promesas, pero en estas lecciones practicamos con `await`).',
         ],
         codigo: [
-          '// Haz que esta función espere 50 ms antes de responder',
+          '// TODO 1: convierte esta función en async.',
           'function prepararTinto() {',
+          '  // TODO 2: antes del return, espera (await) una promesa que se',
+          '  //         cumpla con setTimeout después de 50 milisegundos.',
           '  return "Tinto listo";',
           '}',
           '',
@@ -104,9 +111,9 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'Usas setTimeout y await', condicion: '/setTimeout/.test(codigo) && /await/.test(codigo)' },
         ],
         pistas: [
-          'Escribe `async` antes de `function`: `async function prepararTinto() { ... }`',
-          'La espera es una promesa: `await new Promise((resolver) => setTimeout(resolver, 50));`',
-          'Después del `await`, `return "Tinto listo";`',
+          'Son dos cambios: la palabra `async` antes de `function`, y una línea de espera antes del `return`.',
+          'La espera es una promesa que `setTimeout` cumple: `new Promise((resolver) => setTimeout(resolver, 50))`. Le pasas `resolver` a `setTimeout` para que la cumpla a los 50 ms.',
+          'La línea completa es `await new Promise((resolver) => setTimeout(resolver, 50));` y debajo queda `return "Tinto listo";`',
         ],
         solucion: [
           'async function prepararTinto() {',
@@ -127,8 +134,10 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           'const API = "https://api.tienda-donpepe.co";',
           '',
-          '// Pide los productos con fetch y devuelve los nombres de los que hay',
           'async function productosDisponibles() {',
+          '  // TODO 1: pide API + "/productos" con fetch y espera la respuesta.',
+          '  // TODO 2: convierte la respuesta con .json() (también con await).',
+          '  // TODO 3: devuelve los nombres de los que tienen existencias > 0.',
           '  return [];',
           '}',
           '',
@@ -157,9 +166,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Primero la respuesta: `const respuesta = await fetch(API + "/productos");`',
-          'Luego los datos: `const productos = await respuesta.json();`',
-          'Para terminar, `filter` por `existencias > 0` y `map` al `nombre`, como en la lección de métodos de arreglos.',
+          'Son tres pasos en orden: pedir, convertir y filtrar. Los dos primeros llevan `await`.',
+          'Primero `const respuesta = await fetch(API + "/productos");` y luego `const productos = await respuesta.json();`',
+          'Para terminar, `return productos.filter((producto) => producto.existencias > 0).map((producto) => producto.nombre);`',
         ],
         solucion: [
           'const API = "https://api.tienda-donpepe.co";',

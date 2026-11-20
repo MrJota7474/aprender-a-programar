@@ -12,6 +12,11 @@ globalThis.Rutas.agregarLeccion(
           'También sirve para agrupar: el acumulador puede ser un objeto que va creciendo, por ejemplo un total por categoría.',
           '`sort` ordena con una **función de comparación** `(a, b) => a - b`: si devuelve un número negativo, `a` va primero; si es positivo, `b` va primero. Para ir de mayor a menor se invierte: `b - a`.',
           'Ojo: `sort` **modifica el arreglo original**. Para no dañarlo, copia antes con spread: `[...arreglo].sort(...)`.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 2: `suma` empieza en 0 (el valor inicial). Vuelta 1: 0 + 4500 = 4500. Vuelta 2: 4500 + 3000 = 7500. Vuelta 3: 7500 + 12000 = 19500. Es el mismo acumulador del `for...of`, en una línea.',
+          'Líneas 10 a 12: aquí el acumulador `grupos` es un objeto que empieza vacío `{}`. Dos detalles nuevos: `[p.categoria]` entre corchetes usa el **valor** de la categoría ("comida") como nombre de propiedad, y `grupos[p.categoria] || 0` significa "lo que lleve esa categoría, o 0 si todavía no tiene nada". El resultado es `{ comida: 4500, bebida: 4500 }`.',
+          'Línea 15: copia `ventas` y ordena la copia de menor a mayor. `ventas` queda como estaba.',
+          '**Error común:** olvidar el valor inicial. `[].reduce((suma, venta) => suma + venta)` con una lista vacía falla con `Reduce of empty array with no initial value` ("reduce de un arreglo vacío sin valor inicial"). Solución: termina siempre con `, 0)` o el valor que corresponda.',
         ],
         codigo: [
           'const ventas = [4500, 3000, 12000];',
@@ -42,7 +47,11 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           'const ventas = [4500, 3000, 12000, 1500, 7000];',
           '',
-          '// Calcula aquí totalVentas con reduce',
+          '// TODO: crea totalVentas con ventas.reduce( ... ).',
+          '// La flecha recibe (suma, venta) y devuelve el acumulado nuevo.',
+          '// No olvides el valor inicial al final.',
+          '',
+          '// Para revisar: console.log(totalVentas); debe mostrar 28000',
           '',
         ].join('\n'),
         pruebas: [
@@ -55,7 +64,7 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'La forma es `ventas.reduce((suma, venta) => ..., 0)`.',
+          'Es casi igual a la línea 2 del ejemplo de la Idea. La forma es `ventas.reduce((suma, venta) => ..., 0)`.',
           'En cada vuelta devuelves el acumulado nuevo: `suma + venta`.',
           'Completa: `const totalVentas = ventas.reduce((suma, venta) => suma + venta, 0);`',
         ],
@@ -81,7 +90,9 @@ globalThis.Rutas.agregarLeccion(
           '];',
           '',
           'function ordenarPorPrecio(productos) {',
-          '  // Devuelve una copia ordenada de mayor a menor precio',
+          '  // TODO 1: copia la lista con spread.',
+          '  // TODO 2: ordena la copia comparando precios, del más caro al más barato.',
+          '  // TODO 3: devuelve la copia ordenada.',
           '  return null;',
           '}',
           '',
@@ -117,8 +128,8 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Primero copia: `[...productos]` es un arreglo nuevo con los mismos productos.',
-          'Luego ordena la copia: `.sort((a, b) => b.precio - a.precio)`.',
+          'Son dos pasos: copiar y ordenar la copia. "Del más caro al más barato" es de mayor a menor, así que la resta va al revés.',
+          'Copia con `[...productos]` y ordena esa copia con `.sort((a, b) => b.precio - a.precio)`. Se resta `.precio` porque cada elemento es un objeto.',
           'Juntos: `return [...productos].sort((a, b) => b.precio - a.precio);`',
         ],
         solucion: [

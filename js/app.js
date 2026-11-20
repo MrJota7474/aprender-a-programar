@@ -78,7 +78,26 @@
     botonBorrar: porId('boton-borrar'),
     botonAnterior: porId('boton-anterior'),
     botonSiguiente: porId('boton-siguiente'),
+    menuFondo: porId('menu-fondo'),
+    contenido: porId('contenido'),
+    columnaLeccion: porId('columna-leccion'),
+    columnaTaller: porId('columna-taller'),
+    verLeccion: porId('ver-leccion'),
+    verCodigo: porId('ver-codigo'),
+    irAlCodigo: porId('ir-al-codigo'),
+    leccionSegmentos: porId('leccion-segmentos'),
+    leccionCuenta: porId('leccion-cuenta'),
+    ejecutarTexto: porId('ejecutar-texto'),
+    ayudaResultado: porId('ayuda-resultado'),
   });
+
+  // Desde este ancho la lección y el editor van lado a lado (cada uno con su
+  // propio desplazamiento) y el menú es un cajón. Debe coincidir con el
+  // @media de css/estilos.css. Se eligió 1100 px porque por debajo cada
+  // columna quedaría de menos de 500 px y el editor se sentiría apretado.
+  const PANTALLA_PARTIDA = window.matchMedia('(min-width: 1100px)');
+  // Desde este ancho cabe además el menú de lecciones como columna fija.
+  const PANTALLA_CON_MENU = window.matchMedia('(min-width: 1500px)');
 
   // En algunos navegadores (modo privado, permisos bloqueados) hasta LEER
   // localStorage lanza un error. En ese caso se usa un almacén que no guarda.
@@ -105,11 +124,23 @@
     indicePaso: 0,
     pistasVistas: 0,
     solucionVisible: false,
+    // Antes de mostrar la solución se pide confirmar (es mejor intentarlo).
+    confirmandoSolucion: false,
+    // En pantallas angostas solo cabe una mitad: 'leccion' o 'codigo'.
+    panel: 'leccion',
     ejecutando: false,
     // Sube cada vez que el estudiante cambia de paso, de ruta o reinicia.
     // Sirve para descartar el resultado de una ejecución que quedó vieja.
     turno: 0,
   };
+  // Lo que se reinicia cada vez que se abre un paso: las pistas vistas, la
+  // solución y la mitad visible en el celular (siempre se empieza leyendo).
+  const AL_ABRIR_UN_PASO = Object.freeze({
+    pistasVistas: 0,
+    solucionVisible: false,
+    confirmandoSolucion: false,
+    panel: 'leccion',
+  });
   let temporizadorGuardado = null;
   let tabuladorLibre = false;
 
@@ -798,6 +829,7 @@
       return crear('li', { clase: 'etapa' + (hecho ? ' etapa--hecha' : ''), hijos: [boton] });
     });
     nodos.pestanas.replaceChildren(...elementos);
+    pintarAvanceDeLeccion();
   }
 
   // ---------- Puentes entre lecciones (rutas/puentes.js) ----------
@@ -830,16 +862,41 @@
     });
   }
 
+  // "En esta ruta" es una bienvenida: solo se muestra mientras el estudiante
+  // no ha completado ningún paso de la ruta. Después ya la conoce y estorba.
+  function introDeRutaVisible(intro) {
+    return Boolean(intro) && estado.indiceLeccion === 0 &&
+      Progreso.contarCompletados(estado.progreso, estado.ruta) === 0;
+  }
+
+  // "Viene de" y "Para qué sirve" van plegados: el estudiante los abre si
+  // quiere el contexto, y la explicación del paso queda arriba, a la vista.
+  function crearPuentePlegable(leccion) {
+    const filas = [
+      ['Viene de', leccion.viene],
+      ['Para qué sirve', leccion.sirve],
+    ];
+    if (!filas.some(([, texto]) => texto)) return null;
+    const recuadro = crearRecuadroPuente('puente--inicio', filas);
+    return crear('details', {
+      clase: 'puente-plegable',
+      hijos: [
+        crear('summary', { texto: '¿De dónde viene esta lección y para qué sirve?' }),
+        recuadro,
+      ],
+    });
+  }
+
   function puentesAntesDelTexto() {
     if (estado.indicePaso !== 0) return [];
     const { intro, leccion } = puenteActual();
-    const introDeRuta = estado.indiceLeccion === 0 && intro ? intro : '';
-    const filas = [
-      ['En esta ruta', introDeRuta],
-      ['Viene de', leccion ? leccion.viene : ''],
-      ['Para qué sirve', leccion ? leccion.sirve : ''],
-    ];
-    return filas.some(([, texto]) => texto) ? [crearRecuadroPuente('puente--inicio', filas)] : [];
+    const piezas = [];
+    if (introDeRutaVisible(intro)) {
+      piezas.push(crearRecuadroPuente('puente--ruta', [['En esta ruta', intro]]));
+    }
+    const plegable = leccion ? crearPuentePlegable(leccion) : null;
+    if (plegable) piezas.push(plegable);
+    return piezas;
   }
 
   function puentesDespuesDelTexto() {
@@ -847,6 +904,24 @@
     const { leccion } = puenteActual();
     if (!leccion || !leccion.sigue) return [];
     return [crearRecuadroPuente('puente--sigue', [['Lo que sigue', leccion.sigue]])];
+  }
+
+  // Los textos seguidos que empiezan por "- " son una lista: se agrupan en un
+  // solo <ul> para que se vean como viñetas y el lector de pantalla anuncie
+  // "lista de 3 elementos". Lo demás es un párrafo. No se modifica "textos".
+  function crearBloquesDeTexto(textos) {
+    return textos.reduce((bloques, texto) => {
+      if (!texto.startsWith('- ')) return [...bloques, crear('p', { htmlSeguro: formatearTexto(texto) })];
+      const item = crear('li', { htmlSeguro: formatearTexto(texto.slice(2)) });
+      const ultimo = bloques[bloques.length - 1];
+      if (ultimo && ultimo.tagName === 'UL') {
+        // La <ul> la acaba de crear esta misma función: agregarle un
+        // elemento no toca nada que venga de afuera.
+        ultimo.append(item);
+        return bloques;
+      }
+      return [...bloques, crear('ul', { hijos: [item] })];
+    }, []);
   }
 
   function pintarPaso() {
@@ -860,7 +935,7 @@
     nodos.titulo.textContent = paso.titulo;
     nodos.texto.replaceChildren(
       ...puentesAntesDelTexto(),
-      ...paso.texto.map((parrafo) => crear('p', { htmlSeguro: formatearTexto(parrafo) })),
+      ...crearBloquesDeTexto(paso.texto),
       ...puentesDespuesDelTexto()
     );
 
@@ -873,6 +948,50 @@
 
     nodos.botonAnterior.disabled = posicionVecina(-1) === null;
     nodos.botonSiguiente.disabled = posicionVecina(1) === null;
+    pintarPanel();
+    animarEntrada(nodos.columnaLeccion);
+  }
+
+  // En pantallas angostas se ve una sola mitad. El CSS lee data-panel y
+  // aria-pressed le dice al lector de pantalla cuál botón está activo.
+  function pintarPanel() {
+    nodos.contenido.dataset.panel = estado.panel;
+    nodos.verLeccion.setAttribute('aria-pressed', String(estado.panel === 'leccion'));
+    nodos.verCodigo.setAttribute('aria-pressed', String(estado.panel === 'codigo'));
+  }
+
+  function cambiarPanel(panel) {
+    if (estado.panel === panel) return;
+    estado = { ...estado, panel };
+    pintarPanel();
+    window.scrollTo({ top: 0 });
+    animarEntrada(panel === 'codigo' ? nodos.columnaTaller : nodos.columnaLeccion);
+  }
+
+  // Barra corta junto a los botones Lección/Código: un segmento por paso
+  // (verde si está hecho, del color de la ruta si es el paso abierto). Así
+  // el avance de la lección se ve siempre, aunque se haya bajado.
+  function pintarAvanceDeLeccion() {
+    const leccion = leccionActual();
+    nodos.leccionSegmentos.replaceChildren(
+      ...leccion.pasos.map((paso, indice) => {
+        let clase = 'segmento';
+        if (estaHecho(leccion, paso)) clase += ' segmento--hecho';
+        if (indice === estado.indicePaso) clase += ' segmento--actual';
+        return crear('span', { clase });
+      })
+    );
+    nodos.leccionCuenta.textContent =
+      'Paso ' + (estado.indicePaso + 1) + ' de ' + leccion.pasos.length;
+  }
+
+  // Aparición suave al cambiar de paso o de mitad. Quitar y volver a poner
+  // la clase reinicia la animación; leer offsetWidth obliga al navegador a
+  // notar que se quitó. El CSS solo la anima si no se pidió reducir el movimiento.
+  function animarEntrada(nodo) {
+    nodo.classList.remove('aparecer');
+    void nodo.offsetWidth;
+    nodo.classList.add('aparecer');
   }
 
   // El nombre del archivo y del lenguaje encima del editor. Va en cada paso
@@ -1042,11 +1161,14 @@
   // no alcanzó a correr los <script> (que podrían traer un bucle infinito y
   // congelar la app), así que la vista previa se muestra sin JavaScript.
   // El sandbox nuevo aplica en la siguiente carga, que la dispara el srcdoc.
+  // Primero se muestra el iframe y DESPUÉS se le da el documento: si recibe
+  // el srcdoc mientras está oculto (display: none), el navegador puede dejarlo
+  // en blanco al mostrarlo, aunque el documento ya esté cargado.
   function pintarVistaPrevia(vista, conScripts) {
-    nodos.vistaPrevia.setAttribute('sandbox', conScripts ? 'allow-scripts' : '');
-    nodos.vistaPrevia.srcdoc = prepararDocumento(vista.html);
     nodos.vistaPrevia.hidden = false;
     nodos.vistaVacia.hidden = true;
+    nodos.vistaPrevia.setAttribute('sandbox', conScripts ? 'allow-scripts' : '');
+    nodos.vistaPrevia.srcdoc = prepararDocumento(vista.html);
   }
 
   function limpiarResultados() {
@@ -1056,6 +1178,7 @@
     nodos.tablas.replaceChildren();
     nodos.error.hidden = true;
     nodos.felicitacion.hidden = true;
+    nodos.ayudaResultado.hidden = true;
     pintarPruebasPendientes();
   }
 
@@ -1071,6 +1194,8 @@
         })
       );
 
+    if (estado.confirmandoSolucion) elementos.push(crearConfirmacionSolucion());
+
     if (estado.solucionVisible) {
       elementos.push(
         crear('p', {
@@ -1083,7 +1208,8 @@
     nodos.pistas.replaceChildren(...elementos);
 
     const quedanPistas = estado.pistasVistas < pistas.length;
-    nodos.botonPista.hidden = pistas.length === 0 || estado.solucionVisible;
+    nodos.botonPista.hidden =
+      pistas.length === 0 || estado.solucionVisible || estado.confirmandoSolucion;
     nodos.botonPista.textContent = quedanPistas
       ? 'Dame una pista (' + estado.pistasVistas + '/' + pistas.length + ')'
       : 'Ver la solución';
@@ -1123,15 +1249,70 @@
         resultado.resultados.filter((prueba) => prueba.aprobada).length,
         resultado.resultados.length
       );
+      const primeraFallida = resultado.resultados.findIndex((prueba) => !prueba.aprobada);
       nodos.pruebas.replaceChildren(
-        ...resultado.resultados.map((prueba) =>
-          crear('li', {
-            clase: 'prueba ' + (prueba.aprobada ? 'prueba--aprobada' : 'prueba--fallida'),
-            texto: prueba.descripcion,
-          })
-        )
+        ...resultado.resultados.map((prueba, indice) => {
+          const item = crear('li', {
+            clase: 'prueba ' + (prueba.aprobada ? 'prueba--aprobada' : 'prueba--fallida') +
+              (indice === primeraFallida ? ' prueba--primera' : ''),
+            hijos: [crear('span', { texto: prueba.descripcion })],
+          });
+          // El ✓ y el ✗ los dibuja el CSS: esto es lo que oye un lector de pantalla.
+          item.prepend(crear('span', {
+            clase: 'solo-lectores',
+            texto: prueba.aprobada ? 'Cumplida: ' : 'Falta: ',
+          }));
+          return item;
+        })
       );
     }
+    pintarAyudaResultado(resultado);
+  }
+
+  // Cuando algo no pasó, una nota corta dice qué hacer ahora: leer el error
+  // o revisar la primera prueba que falta, y ofrece la pista siguiente.
+  function pintarAyudaResultado(resultado) {
+    const fallidas = resultado.resultados.filter((prueba) => !prueba.aprobada);
+    const total = resultado.resultados.length;
+    let titulo = '';
+    let detalle = '';
+    if (resultado.error) {
+      titulo = 'Tu código tiene un error, y es normal.';
+      detalle = 'Lee el recuadro rojo: dice qué pasó y casi siempre en qué línea. ' +
+        'Corrígelo y vuelve a ejecutar.';
+    } else if (fallidas.length > 0) {
+      const cumplidas = total - fallidas.length;
+      titulo = cumplidas === 0
+        ? (total === 1 ? 'Todavía falta la prueba.' : 'Todavía faltan las ' + total + ' pruebas.')
+        : 'Vas bien: ' + cumplidas + ' de ' + total + ' pruebas cumplidas.';
+      detalle = 'Empieza por la que está en rojo: «' + fallidas[0].descripcion + '». ' +
+        'Cambia tu código y vuelve a ejecutar.';
+    }
+    nodos.ayudaResultado.hidden = titulo === '';
+    if (titulo === '') return;
+    nodos.ayudaResultado.replaceChildren(
+      crear('p', { clase: 'ayuda-resultado__titulo', texto: titulo }),
+      crear('p', { texto: detalle }),
+      ...crearBotonDeAyuda()
+    );
+  }
+
+  // El mismo paso que el botón "Dame una pista", pero junto al resultado,
+  // donde el estudiante está mirando cuando algo falla.
+  function crearBotonDeAyuda() {
+    const pistas = pasoActual().pistas || [];
+    if (pistas.length === 0 || estado.solucionVisible || estado.confirmandoSolucion) return [];
+    const quedan = estado.pistasVistas < pistas.length;
+    return [
+      crear('button', {
+        clase: 'boton boton--pista',
+        texto: quedan ? 'Ver la pista ' + (estado.pistasVistas + 1) : 'Ver la solución',
+        alHacerClic: () => {
+          nodos.ayudaResultado.hidden = true;
+          alPedirPista();
+        },
+      }),
+    ];
   }
 
   // "premio" dice lo que ganó el estudiante con este paso: { puntos, nivelNuevo }.
@@ -1155,16 +1336,27 @@
     }
     const accion = siguiente
       ? crear('button', {
-          clase: 'boton boton--principal',
+          clase: 'boton boton--principal boton--grande',
           texto: 'Siguiente paso →',
           alHacerClic: () => irA(siguiente.indiceLeccion, siguiente.indicePaso),
         })
       : crearEnlaceARutas();
+    // Si el estudiante ejecutó con Ctrl+Enter desde el editor, sigue
+    // escribiendo ahí: quitarle el foco haría que su siguiente Enter lo
+    // mandara de paso sin querer. En ese caso el botón solo se muestra.
+    const moverFoco = document.activeElement !== nodos.codigo;
+    const pie = siguiente && moverFoco
+      ? [crear('p', { clase: 'felicitacion__atajo', htmlSeguro: 'o presiona <kbd>Enter</kbd>' })]
+      : [];
     nodos.felicitacion.replaceChildren(
       crear('div', { clase: 'felicitacion__cuerpo', hijos: cuerpo }),
-      accion
+      crear('div', { clase: 'felicitacion__accion', hijos: [accion, ...pie] })
     );
     nodos.felicitacion.hidden = false;
+    // Con el foco en el botón, Enter avanza (lo hace el navegador solo) y
+    // el botón queda a la vista aunque los resultados sean largos.
+    if (moverFoco) enfocarYMostrar(accion);
+    else accion.scrollIntoView({ block: 'nearest', behavior: comportamientoDeDesplazamiento() });
   }
 
   const COLORES_CONFETI = Object.freeze([
@@ -1247,7 +1439,15 @@
     } else {
       pintarCurso();
     }
+    volverArriba();
+  }
+
+  // Un paso nuevo empieza arriba: en la página y, en pantallas anchas, en
+  // las dos columnas (cada una se desplaza por su lado).
+  function volverArriba() {
     window.scrollTo({ top: 0 });
+    nodos.columnaLeccion.scrollTop = 0;
+    nodos.columnaTaller.scrollTop = 0;
   }
 
   // ---------- Navegación entre rutas ----------
@@ -1297,13 +1497,13 @@
       actualizarProgreso(Progreso.cerrarRuta(estado.progreso));
     } else {
       const ubicacion = buscarUbicacion(ruta, estado.progreso.ubicaciones[ruta.id]);
-      estado = { ...estado, ruta, ...ubicacion, pistasVistas: 0, solucionVisible: false, turno };
+      estado = { ...estado, ruta, ...ubicacion, ...AL_ABRIR_UN_PASO, turno };
       actualizarProgreso(
         Progreso.recordarUbicacion(estado.progreso, ruta.id, leccionActual().id, pasoActual().id)
       );
-      cerrarMenu();
       prepararMotor();
     }
+    cerrarMenu();
     pintarVista();
 
     // El enlace que se usó para cambiar de vista quedó oculto: se lleva el
@@ -1345,8 +1545,7 @@
       ...estado,
       indiceLeccion,
       indicePaso,
-      pistasVistas: 0,
-      solucionVisible: false,
+      ...AL_ABRIR_UN_PASO,
       turno: estado.turno + 1,
     };
     actualizarProgreso(
@@ -1360,7 +1559,7 @@
     cerrarMenu();
     prepararMotor();
     pintarCurso();
-    window.scrollTo({ top: 0 });
+    volverArriba();
     // Los botones se vuelven a crear al pintar; sin esto, quien navega con
     // teclado o lector de pantalla quedaría "en el aire".
     nodos.titulo.focus({ preventScroll: true });
@@ -1374,7 +1573,9 @@
   // Desde el menú se entra al primer paso que falte por completar.
   function abrirLeccion(indiceLeccion) {
     if (indiceLeccion === estado.indiceLeccion) {
-      cerrarMenu();
+      // No hay nada que pintar: solo se cierra el cajón y el foco vuelve al
+      // botón del menú, para que no quede en un enlace que ya no se ve.
+      cerrarMenuConTeclado();
       return;
     }
     const leccion = estado.ruta.lecciones[indiceLeccion];
@@ -1382,14 +1583,58 @@
     irA(indiceLeccion, pendiente === -1 ? 0 : pendiente);
   }
 
+  // El menú es un cajón que tapa la lección (salvo en pantallas muy anchas,
+  // donde es una columna fija). Mientras está abierto, la lección queda
+  // "inerte": el Tab no se escapa detrás del cajón y el lector de pantalla
+  // solo lee el menú.
+  function ponerMenuAbierto(abierto) {
+    const comoCajon = abierto && !PANTALLA_CON_MENU.matches;
+    nodos.menu.classList.toggle('menu--abierto', comoCajon);
+    nodos.menuFondo.hidden = !comoCajon;
+    nodos.contenido.inert = comoCajon;
+    nodos.botonMenu.setAttribute('aria-expanded', String(comoCajon));
+  }
+
   function cerrarMenu() {
-    nodos.menu.classList.remove('menu--abierto');
-    nodos.botonMenu.setAttribute('aria-expanded', 'false');
+    ponerMenuAbierto(false);
   }
 
   function alternarMenu() {
-    const abierto = nodos.menu.classList.toggle('menu--abierto');
-    nodos.botonMenu.setAttribute('aria-expanded', String(abierto));
+    const abrir = !nodos.menu.classList.contains('menu--abierto');
+    ponerMenuAbierto(abrir);
+    if (!abrir) return;
+    // El foco entra al cajón, en la lección abierta: desde ahí se baja o sube.
+    const actual = nodos.listaLecciones.querySelector('[aria-current="true"]');
+    if (actual) {
+      actual.focus({ preventScroll: true });
+      actual.scrollIntoView({ block: 'center' });
+    }
+  }
+
+  // Esc cierra el cajón y devuelve el foco al botón que lo abrió.
+  function cerrarMenuConTeclado() {
+    if (!nodos.menu.classList.contains('menu--abierto')) return false;
+    cerrarMenu();
+    nodos.botonMenu.focus();
+    return true;
+  }
+
+  // Atajos que sirven en toda la vista del curso, no solo dentro del editor.
+  function alPresionarTeclaEnLaPagina(evento) {
+    if (estado.ruta === null) return;
+    if (evento.key === 'Escape' && cerrarMenuConTeclado()) {
+      evento.preventDefault();
+      return;
+    }
+    // Ctrl+Enter ejecuta desde cualquier parte (el editor ya lo atiende).
+    if (evento.key === 'Enter' && (evento.ctrlKey || evento.metaKey) && evento.target !== nodos.codigo) {
+      // Con el cajón del menú o un diálogo abiertos, la lección está tapada:
+      // ejecutar ahí sería un cambio que el estudiante no ve.
+      if (nodos.contenido.inert || document.querySelector('dialog[open]')) return;
+      evento.preventDefault();
+      if (!PANTALLA_PARTIDA.matches) cambiarPanel('codigo');
+      alEjecutar();
+    }
   }
 
   // Si la app está abierta en dos pestañas, cada una se entera de lo que
@@ -1441,14 +1686,19 @@
     // foco, así quien usa teclado no pierde su lugar mientras espera. Los
     // clics de más los frena la guarda de arriba.
     nodos.botonEjecutar.setAttribute('aria-disabled', 'true');
-    nodos.botonEjecutar.textContent = 'Ejecutando…';
+    nodos.botonEjecutar.classList.add('boton--cargando');
+    nodos.ejecutarTexto.textContent = 'Ejecutando…';
 
     try {
       // El motor puede ir contando qué hace ("Cargando Python…").
       const avisar = (texto) => {
         if (turno !== estado.turno) return; // el estudiante ya está en otro paso
-        nodos.botonEjecutar.textContent = texto;
+        nodos.ejecutarTexto.textContent = texto;
         nodos.estadoEjecucion.textContent = texto; // lo anuncian los lectores de pantalla
+        // La primera vez Python tarda unos segundos: la consola lo dice para
+        // que no parezca que la app se quedó quieta.
+        nodos.consola.classList.add('consola--vacia', 'consola--cargando');
+        nodos.consola.textContent = texto;
       };
       // El motor se toma del paso que se está ejecutando (guardado arriba en
       // "paso"), no del que esté abierto cuando llegue la respuesta.
@@ -1463,6 +1713,7 @@
       // esperaba, el resultado ya no aplica.
       if (turno !== estado.turno) return;
 
+      nodos.consola.classList.remove('consola--cargando');
       pintarResultado(resultado);
       const aprobado = resultado.error === null && resultado.resultados.every((r) => r.aprobada);
       if (aprobado) {
@@ -1478,7 +1729,9 @@
     } finally {
       estado = { ...estado, ejecutando: false };
       nodos.botonEjecutar.removeAttribute('aria-disabled');
-      nodos.botonEjecutar.textContent = '▶ Ejecutar';
+      nodos.botonEjecutar.classList.remove('boton--cargando');
+      nodos.consola.classList.remove('consola--cargando');
+      nodos.ejecutarTexto.textContent = '▶ Ejecutar';
       nodos.estadoEjecucion.textContent = '';
     }
   }
@@ -1499,13 +1752,84 @@
     };
   }
 
+  // Cada clic muestra una pista más. Cuando ya no quedan, el botón ofrece la
+  // solución, pero primero pide confirmar: verla demasiado pronto quita la
+  // parte del ejercicio donde más se aprende.
   function alPedirPista() {
     const total = (pasoActual().pistas || []).length;
-    estado =
-      estado.pistasVistas < total
-        ? { ...estado, pistasVistas: estado.pistasVistas + 1 }
-        : { ...estado, solucionVisible: true };
+    const quedanPistas = estado.pistasVistas < total;
+    estado = quedanPistas
+      ? { ...estado, pistasVistas: estado.pistasVistas + 1 }
+      : { ...estado, confirmandoSolucion: true };
     pintarPistas();
+    // El foco va a lo nuevo: así el teclado y el lector de pantalla lo encuentran.
+    const nuevo = quedanPistas
+      ? [...nodos.pistas.querySelectorAll('.pista')].pop()
+      : nodos.pistas.querySelector('.confirmar button');
+    if (nuevo) enfocarYMostrar(nuevo);
+    refrescarBotonDeAyuda();
+  }
+
+  // El botón junto al resultado dice "Ver la pista N": tras pedir una pista
+  // (o ver la solución) ese número ya no sirve, así que se cambia o se quita.
+  function refrescarBotonDeAyuda() {
+    if (nodos.ayudaResultado.hidden) return;
+    const viejo = nodos.ayudaResultado.querySelector('.boton--pista');
+    if (viejo) viejo.remove();
+    // Va siempre al final de la nota, igual que en pintarAyudaResultado.
+    nodos.ayudaResultado.append(...crearBotonDeAyuda());
+  }
+
+  function crearConfirmacionSolucion() {
+    const caja = crear('div', {
+      clase: 'confirmar',
+      hijos: [
+        crear('p', { clase: 'confirmar__titulo', texto: '¿Seguro que quieres ver la solución?' }),
+        crear('p', {
+          texto: 'Es mejor intentarlo un rato más: equivocarse y corregir es justo lo que te ' +
+            'enseña. Si ya lo intentaste varias veces, mirarla y entenderla también sirve.',
+        }),
+        crear('div', {
+          clase: 'confirmar__botones',
+          hijos: [
+            crear('button', {
+              clase: 'boton boton--principal',
+              texto: 'Sigo intentando',
+              alHacerClic: () => responderSolucion(false),
+            }),
+            crear('button', {
+              clase: 'boton',
+              texto: 'Sí, ver la solución',
+              alHacerClic: () => responderSolucion(true),
+            }),
+          ],
+        }),
+      ],
+    });
+    caja.setAttribute('role', 'group');
+    caja.setAttribute('aria-label', 'Confirmar antes de ver la solución');
+    return caja;
+  }
+
+  function responderSolucion(ver) {
+    estado = { ...estado, confirmandoSolucion: false, solucionVisible: ver };
+    pintarPistas();
+    refrescarBotonDeAyuda();
+    if (ver) enfocarYMostrar(nodos.pistas.querySelector('.solucion'));
+    else nodos.codigo.focus();
+  }
+
+  // Lleva el foco a un elemento que no es un control (una pista, la
+  // solución): tabindex="-1" deja enfocarlo por código sin meterlo en el Tab.
+  function enfocarYMostrar(nodo) {
+    if (!nodo.matches('button, a, textarea')) nodo.setAttribute('tabindex', '-1');
+    nodo.focus({ preventScroll: true });
+    nodo.scrollIntoView({ block: 'nearest', behavior: comportamientoDeDesplazamiento() });
+  }
+
+  // Desplazamiento suave solo si el estudiante no pidió reducir el movimiento.
+  function comportamientoDeDesplazamiento() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
   }
 
   function alReiniciarCodigo() {
@@ -1607,6 +1931,25 @@
     window.addEventListener('pagehide', guardarCodigoPendiente);
     window.addEventListener('storage', alCambiarAlmacen);
     window.addEventListener('hashchange', alCambiarDireccion);
+    document.addEventListener('keydown', alPresionarTeclaEnLaPagina);
+    nodos.menuFondo.addEventListener('click', cerrarMenu);
+    nodos.verLeccion.addEventListener('click', () => cambiarPanel('leccion'));
+    nodos.verCodigo.addEventListener('click', () => cambiarPanel('codigo'));
+    nodos.irAlCodigo.addEventListener('click', () => {
+      cambiarPanel('codigo');
+      nodos.verCodigo.focus();
+    });
+    // Si la ventana cambia de tamaño con el cajón abierto (por ejemplo, al
+    // girar la tableta), se cierra: en la pantalla nueva podría no ser cajón.
+    PANTALLA_CON_MENU.addEventListener('change', cerrarMenu);
+    // Al angostarse la pantalla solo se ve una mitad. Si el foco estaba en el
+    // editor y la mitad visible era la lección, el foco quedaría escondido.
+    PANTALLA_PARTIDA.addEventListener('change', alCambiarPantallaPartida);
+  }
+
+  function alCambiarPantallaPartida() {
+    if (PANTALLA_PARTIDA.matches) return;
+    if (nodos.columnaTaller.contains(document.activeElement)) cambiarPanel('codigo');
   }
 
   // Si la dirección no pide ninguna ruta, se vuelve a la que el estudiante

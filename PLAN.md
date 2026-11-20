@@ -99,6 +99,14 @@ pistas y progreso guardado.
     dependencias (venv, pip, npm), Git y GitHub de verdad (.gitignore, push, credenciales),
     Claude Code en tu proyecto y el proyecto final: tu página publicada con GitHub Pages.
     Lo que solo se hace en el PC va como "Hazlo en tu computador"; los ejercicios usan Python y la terminal simulada.
+- [x] **Fase 11 — Gran mejora** (hecha el 19 de noviembre de 2026, solo Opus, con revisión profunda y sus 12 arreglos)
+  - [x] Pantalla de lección rediseñada: dos columnas desde 1100 px, conmutador "Lección | Código" en
+    pantallas chicas, puentes plegables, ayuda clara al fallar, "Siguiente paso" con Enter,
+    confirmación antes de ver la solución, atajos visibles y estados de carga.
+  - [x] Glosario interactivo (141 términos) y errores explicados en español (Python ~45, JS, SQL).
+  - [x] Python, SQL, JavaScript y web reescritas para principiantes: ejemplo antes de la regla,
+    "Error común" con el mensaje real, código inicial con TODO, pistas de menos a más y trampas cerradas.
+  - [x] Listas y saltos de línea en el texto de las lecciones; arreglo de la vista previa en blanco.
 
 ## Decisiones tomadas
 

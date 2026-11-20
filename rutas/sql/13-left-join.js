@@ -13,6 +13,7 @@ globalThis.Rutas.agregarLeccion(
           '`NULL` significa "no hay dato", y no es lo mismo que `0` ni que un texto vacío. Por eso no se compara con `=`: se pregunta con `IS NULL` (está vacío) o `IS NOT NULL` (tiene algo).',
           'Si quieres mostrar otra cosa en vez de `NULL`, usa `COALESCE(valor, reemplazo)`: devuelve el primer valor que no sea `NULL`. Por ejemplo, `COALESCE(SUM(cantidad), 0)` muestra 0 en vez de vacío.',
           'Ejecuta la consulta y fíjate en la fila de Andrés Mora: su pedido y su fecha aparecen en `NULL`.',
+          '**Error común:** preguntar `WHERE pedidos.id = NULL`. No da error, pero nunca trae filas, porque nada es "igual" a un dato que no existe. La forma correcta es `WHERE pedidos.id IS NULL`.',
         ],
         codigo: [
           'SELECT clientes.nombre, pedidos.id AS pedido, pedidos.fecha',
@@ -28,7 +29,12 @@ globalThis.Rutas.agregarLeccion(
           'Muestra todos los clientes con la cantidad de pedidos que ha hecho cada uno: `clientes.nombre` y el número de pedidos. Andrés Mora debe aparecer con 0.',
           'Cuidado con una trampa: `COUNT(*)` cuenta filas, y Andrés tiene una fila (con pedido vacío). Cuenta mejor una columna de la tabla `pedidos`, como `COUNT(pedidos.id)`, que ignora los `NULL`.',
         ],
-        codigo: '-- Cada cliente con su cantidad de pedidos (Andrés con 0)\n',
+        codigo: [
+          '-- TODO: parte de clientes y únela con pedidos usando LEFT JOIN',
+          '-- TODO: muestra clientes.nombre y COUNT(pedidos.id)',
+          '-- TODO: agrupa por cliente con GROUP BY',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Usas LEFT JOIN', condicion: '/\\bLEFT\\s+(OUTER\\s+)?JOIN\\b/.test(codigo)' },
           {
@@ -42,7 +48,7 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Parte de `FROM clientes LEFT JOIN pedidos ON pedidos.cliente_id = clientes.id`. Los clientes van a la izquierda porque son los que deben salir todos.',
+          'Parte de la consulta del ejemplo: ya muestra a todos los clientes, incluso a Andrés. Falta juntar las filas de cada cliente y contarlas. Los clientes van a la izquierda (después de `FROM`) porque son los que deben salir todos.',
           'Agrupa por cliente con `GROUP BY clientes.id` (o `clientes.nombre`) y cuenta con `COUNT(pedidos.id)`.',
           'La consulta completa: `SELECT clientes.nombre, COUNT(pedidos.id) AS cantidad FROM clientes LEFT JOIN pedidos ON pedidos.cliente_id = clientes.id GROUP BY clientes.id;`',
         ],
@@ -60,7 +66,12 @@ globalThis.Rutas.agregarLeccion(
           'Don Pepe quiere escribirles a los clientes que nunca han hecho un pedido para invitarlos a volver.',
           'Muestra solo el `nombre` de esos clientes. Usa un `LEFT JOIN` y, en el `WHERE`, quédate con las filas donde la pareja quedó vacía (`IS NULL`).',
         ],
-        codigo: '-- Nombre de los clientes sin pedidos\n',
+        codigo: [
+          '-- TODO: une clientes con pedidos usando LEFT JOIN',
+          '-- TODO: con WHERE, deja las filas donde pedidos.id quedó vacío (IS NULL)',
+          '-- TODO: muestra solo clientes.nombre',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Usas LEFT JOIN', condicion: '/\\bLEFT\\s+(OUTER\\s+)?JOIN\\b/.test(codigo)' },
           { descripcion: 'Usas IS NULL', condicion: '/\\bIS\\s+NULL\\b/.test(codigo)' },
@@ -75,8 +86,8 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Une igual que en el paso anterior: `FROM clientes LEFT JOIN pedidos ON pedidos.cliente_id = clientes.id`.',
-          'Los clientes sin pedidos son los que tienen `pedidos.id` vacío: `WHERE pedidos.id IS NULL`.',
+          'Vuelve a mirar el ejemplo: el cliente sin pedidos es justo la fila donde las columnas de pedidos salen en `NULL`.',
+          'Une igual que en el paso anterior y filtra con `WHERE pedidos.id IS NULL` (no con `= NULL`).',
           'La consulta completa: `SELECT clientes.nombre FROM clientes LEFT JOIN pedidos ON pedidos.cliente_id = clientes.id WHERE pedidos.id IS NULL;`',
         ],
         solucion: [

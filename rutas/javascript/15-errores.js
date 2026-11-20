@@ -11,6 +11,11 @@ globalThis.Rutas.agregarLeccion(
           'A veces un programa recibe datos dañados o inválidos y falla. Un **error** que nadie atiende detiene todo el programa.',
           'Con `try` pruebas un bloque de código; si algo falla, el programa salta al bloque `catch` en vez de caerse. El bloque `finally` (opcional) se ejecuta siempre, haya o no error.',
           'Tú también puedes **lanzar** un error con `throw new Error("mensaje")` cuando los datos no sirven. Un buen mensaje dice qué estuvo mal.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 2: "esto no es JSON" no se puede leer, así que `JSON.parse` lanza un error. La línea 3 nunca se ejecuta: el programa salta directo al `catch`.',
+          'Línea 4: `catch (error)` recibe el error en la variable `error`. Línea 5: `error.message` es el texto que explica qué pasó. Línea 7: el `finally` corre de todas formas.',
+          'Líneas 10 a 15: `dividir` revisa sus datos antes de trabajar. Si `b` es 0, `throw` corta la función ahí mismo y el error viaja hasta el `catch` de la línea 19.',
+          '**Error común:** creer que `catch` arregla el problema. Solo lo atrapa para que el programa no se caiga; tú decides qué hacer ahí (avisar, devolver `null`...). Y si no hay `try`, verás el error en rojo, por ejemplo `Unexpected token \'e\'... is not valid JSON`, y el programa se detiene.',
         ],
         codigo: [
           'try {',
@@ -44,8 +49,9 @@ globalThis.Rutas.agregarLeccion(
           'Si el texto está dañado, `JSON.parse` lanza un error: atrápalo con `try` / `catch` y devuelve `null` en vez de dejar que el programa se caiga.',
         ],
         codigo: [
-          '// Crea aquí la función leerJson',
           'function leerJson(texto) {',
+          '  // TODO 1: abre un try y, dentro, devuelve el resultado de JSON.parse(texto).',
+          '  // TODO 2: en el catch, devuelve null.',
           '  return null;',
           '}',
           '',
@@ -71,9 +77,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'La estructura es: `try { ... } catch (error) { ... }`',
-          'Dentro del `try` haz `return JSON.parse(texto);`',
-          'Dentro del `catch` devuelve `null`.',
+          'Mira el primer bloque del ejemplo de la Idea: tu función hace lo mismo, pero con `return` en vez de `console.log`.',
+          'La estructura es: `try { ... } catch (error) { ... }`. Dentro del `try` haz `return JSON.parse(texto);`',
+          'Completo: `try { return JSON.parse(texto); } catch (error) { return null; }`',
         ],
         solucion: [
           'function leerJson(texto) {',
@@ -92,10 +98,13 @@ globalThis.Rutas.agregarLeccion(
           'Crea la función `validarPedido(producto, cantidad)`.',
           'Si `cantidad` **no** es un número entero positivo (0, negativos, decimales, textos, `NaN`...), la función debe lanzar un error con `throw new Error(...)`. El mensaje debe ser claro y mencionar la palabra "cantidad".',
           'Si todo está bien, devuelve el objeto `{ producto, cantidad }`.',
+          'Dos herramientas nuevas: `Number.isInteger(x)` responde `true` si `x` es un número entero (3 sí; 1.5, "3" y `NaN` no). Y `!` significa **no**: le da la vuelta a un booleano, así que `!true` es `false`.',
         ],
         codigo: [
-          '// Crea aquí la función validarPedido',
           'function validarPedido(producto, cantidad) {',
+          '  // TODO 1: si cantidad NO es entera, o es 0 o menos, lanza un Error',
+          '  //         con un mensaje que diga qué pasa con la cantidad.',
+          '  // TODO 2: si pasa la revisión, devuelve { producto, cantidad }.',
           '  return null;',
           '}',
           '',
@@ -140,9 +149,9 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'Usas throw new Error', condicion: '/throw\\s+new\\s+Error/.test(codigo)' },
         ],
         pistas: [
-          'Para saber si es un entero usa `Number.isInteger(cantidad)`; también debe ser mayor que 0.',
-          'Si la validación falla: `throw new Error("La cantidad debe ser un entero positivo");`',
-          'Si pasa la validación, `return { producto, cantidad };`',
+          'Primero revisa y lanza el error si algo está mal; solo después devuelve el pedido. Es como `dividir` en la Idea.',
+          'La condición une dos casos malos con `||`: `!Number.isInteger(cantidad) || cantidad <= 0`',
+          '`if (...) { throw new Error("La cantidad debe ser un entero positivo"); }` y después `return { producto, cantidad };`',
         ],
         solucion: [
           'function validarPedido(producto, cantidad) {',

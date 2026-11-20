@@ -17,10 +17,12 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Preguntarle a una base de datos',
         texto: [
-          'Una **base de datos** guarda información en **tablas**. Cada tabla tiene **columnas** (qué datos se guardan) y **filas** (un registro por cada cosa: un producto, un cliente).',
-          '**SQL** es el lenguaje para hacerle preguntas a esas tablas. Casi todas las aplicaciones que usas guardan sus datos así.',
-          'La pregunta más básica es `SELECT * FROM productos;` y se lee: "muestra todas las columnas de la tabla productos". El `*` significa "todas" y la consulta termina en punto y coma.',
-          'Arriba del editor puedes ver las tablas de esta base: una tienda de barrio. Presiona **Ejecutar**.',
+          'Presiona **Ejecutar**. Aparece una tabla con los productos de una tienda de barrio: cada renglón es un producto, con su nombre, su precio y más datos. Eso lo pidió la línea `SELECT * FROM productos;`.',
+          'Una **base de datos** guarda información en **tablas**, como hojas de Excel. Cada tabla tiene **columnas** (qué datos se guardan: nombre, precio) y **filas** (un renglón por cada cosa: un producto, un cliente).',
+          '**SQL** es el lenguaje para hacerle preguntas a esas tablas. Cada pregunta se llama **consulta**. Casi todas las aplicaciones que usas guardan sus datos así.',
+          '**Ejemplo explicado palabra por palabra:** `SELECT` significa "selecciona" o "muestra". El `*` significa "todas las columnas". `FROM productos` dice de qué tabla. El `;` cierra la consulta, como el punto final de una frase.',
+          'Arriba del editor puedes ver todas las tablas de esta base y sus columnas.',
+          '**Error común:** escribir mal el nombre de la tabla. Si escribes `SELECT * FROM producto;` (sin la s), verás `no such table: producto`: esa tabla no existe. Copia el nombre exacto de la lista de tablas.',
         ],
         codigo: 'SELECT * FROM productos;',
       },
@@ -31,7 +33,11 @@ globalThis.Rutas.agregarLeccion(
           'Ahora tú. Muestra todas las columnas de la tabla `clientes`.',
           'Las palabras de SQL se suelen escribir en mayúsculas (`SELECT`, `FROM`) para distinguirlas, pero en minúsculas también funcionan.',
         ],
-        codigo: '-- Escribe tu consulta debajo de esta línea\n',
+        codigo: [
+          '-- Las líneas que empiezan con -- son comentarios: SQL las ignora.',
+          '-- TODO: muestra todas las columnas (*) de la tabla clientes',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Muestras los 6 clientes', condicion: 'mismasFilas("SELECT * FROM clientes")' },
           {
@@ -53,7 +59,7 @@ globalThis.Rutas.agregarLeccion(
           'Casi nunca hacen falta todas las columnas. En vez de `*` puedes escribir las que quieres, separadas por comas.',
           'Muestra solo el `nombre` y el `precio` de los productos, en ese orden.',
         ],
-        codigo: '-- Solo nombre y precio de los productos\n',
+        codigo: '-- TODO: en vez de *, escribe las columnas nombre y precio, separadas por coma\n',
         pruebas: [
           {
             descripcion: 'Las columnas son nombre y precio, en ese orden',

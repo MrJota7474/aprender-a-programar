@@ -13,7 +13,12 @@ globalThis.Rutas.agregarLeccion(
           'Muestra la `categoria` y la suma de unidades vendidas (`SUM(pedidos.cantidad)`) de las categorías que han vendido **5 unidades o más**.',
           'Ordénalas de la que más vendió a la que menos.',
         ],
-        codigo: '-- Categorías con 5 o más unidades vendidas, de mayor a menor\n',
+        codigo: [
+          '-- TODO: une pedidos con productos para llegar a la categoría',
+          '-- TODO: muestra la categoría y SUM(pedidos.cantidad) con un alias',
+          '-- TODO: agrupa por categoría, filtra con HAVING (5 o más) y ordena de mayor a menor',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Usas GROUP BY y HAVING', condicion: '/\\bGROUP\\s+BY\\b/.test(codigo) && /\\bHAVING\\b/.test(codigo)' },
           {
@@ -44,8 +49,15 @@ globalThis.Rutas.agregarLeccion(
           'Un pedido "grande" es el que vale más que el valor promedio de todos los pedidos. El valor de un pedido es su cantidad por el precio del producto.',
           'Muestra, para cada pedido grande, el nombre del cliente, el nombre del producto y el valor del pedido. Necesitas dos `JOIN` y una subconsulta con `AVG` en el `WHERE`.',
           'El orden de las filas no importa.',
+          'Algo nuevo que te sirve aquí: a una tabla se le puede poner un apodo corto escribiéndolo después de su nombre. `FROM pedidos p` permite escribir `p.cantidad` en vez de `pedidos.cantidad`. Así la subconsulta no se confunde con las tablas de la consulta de afuera.',
         ],
-        codigo: '-- Cliente, producto y valor de los pedidos por encima del promedio\n',
+        codigo: [
+          '-- TODO: une pedidos con clientes y con productos (dos JOIN)',
+          '-- TODO: muestra el nombre del cliente, el del producto y cantidad * precio',
+          '-- TODO: en el WHERE, deja los pedidos cuyo valor es mayor que',
+          '--       (SELECT AVG(...) ...) calculado con apodos p y pr',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Usas una subconsulta (un SELECT entre paréntesis)', condicion: '/\\(\\s*SELECT\\b/.test(codigo)' },
           { descripcion: 'La subconsulta calcula el promedio con AVG', condicion: '/\\(\\s*SELECT\\s+AVG\\b/.test(codigo)' },
@@ -85,7 +97,13 @@ globalThis.Rutas.agregarLeccion(
           '- `fiel` si han gastado 20000 o más.',
           'Muestra el `nombre` y la clasificación de **los 6 clientes**. Piensa bien qué `JOIN` necesitas para que Andrés Mora no desaparezca, y usa `CASE`, `COALESCE` y `GROUP BY`.',
         ],
-        codigo: '-- Nombre de cada cliente y su clasificación\n',
+        codigo: [
+          '-- TODO: parte de clientes y usa LEFT JOIN con pedidos y con productos',
+          '-- TODO: calcula el gasto con COALESCE(SUM(cantidad * precio), 0)',
+          '-- TODO: clasifica el gasto con CASE (sin compras, ocasional, fiel)',
+          '-- TODO: agrupa por cliente',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Usas CASE y GROUP BY', condicion: '/\\bCASE\\b/.test(codigo) && /\\bGROUP\\s+BY\\b/.test(codigo)' },
           {

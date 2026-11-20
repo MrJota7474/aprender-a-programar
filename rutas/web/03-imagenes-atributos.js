@@ -23,6 +23,8 @@
             'Los dos atributos principales son `src` (de "source": de dónde sale la imagen) y `alt` (el **texto alternativo**: una descripción corta de lo que muestra la imagen).',
             '¿Por qué importa `alt`? Si la imagen no carga (internet lento, mala dirección), el navegador muestra el `alt` en su lugar. Y las personas ciegas usan lectores de pantalla que **leen en voz alta** ese texto: sin `alt`, para ellas la imagen no existe.',
             'Aquí `src` trae una imagen diminuta escrita dentro de la misma etiqueta (empieza con `data:`), porque esta app funciona sin internet. Normalmente ahí va el nombre de un archivo, como `pan.png`. Con `width` y `height` se le da el tamaño en píxeles. Ejecuta y cambia el `alt`.',
+            'Un **píxel** es cada puntico de la pantalla. `width="120"` significa "120 puntos de ancho".',
+            '**Error común:** pegar los atributos o dejar el valor sin cerrar. `<img src="pan.png"alt="Pan">` (sin espacio) o `alt="Pan fresco` (sin la comilla final) confunden al navegador y el `alt` se pierde. Cada atributo va separado por un espacio, con su valor entre dos comillas.',
           ],
           codigo: [
             '<h1>Pan fresco</h1>',
@@ -39,6 +41,7 @@
           ],
           codigo: [
             '<h1>Pan fresco</h1>',
+            '<!-- TODO: agrega dentro de esta img un atributo alt que describa el pan. -->',
             '<img src="' + IMAGEN + '" width="120" height="80">',
             '<p>Lo horneamos cada mañana.</p>',
           ].join('\n'),
@@ -77,7 +80,9 @@
           ],
           codigo: [
             '<h1>La vitrina</h1>',
+            '<!-- TODO 1: a esta imagen (el pan) ponle alt y width="120". -->',
             '<img src="' + IMAGEN + '">',
+            '<!-- TODO 2: a esta imagen (la leche) ponle alt y width="120". -->',
             '<img src="' + IMAGEN + '">',
           ].join('\n'),
           pruebas: [

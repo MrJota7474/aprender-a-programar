@@ -8,10 +8,13 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Diseñar dónde se guardan los datos',
         texto: [
-          'Con `CREATE TABLE` creas una tabla nueva. Entre paréntesis va cada columna con su nombre y su **tipo**: `INTEGER` (números enteros), `REAL` (números con decimales) o `TEXT` (textos).',
-          '`PRIMARY KEY` marca la columna que identifica cada fila. Casi siempre es un `id`: no se repite y la base lo llena sola.',
-          '`NOT NULL` significa que esa columna es obligatoria. Sin esa marca, la columna puede quedar vacía (aquí, el teléfono).',
+          'La tienda quiere anotar sus proveedores, pero no hay tabla para eso. Ejecuta el código: crea la tabla `proveedores`, le agrega una fila y la muestra.',
+          'Con `CREATE TABLE` ("crear tabla") creas una tabla nueva. Entre paréntesis va cada columna con su nombre y su **tipo**: qué clase de dato guarda. `INTEGER` son números enteros, `REAL` números con decimales y `TEXT` textos.',
+          '`PRIMARY KEY` ("clave principal") marca la columna que identifica cada fila. Casi siempre es un `id`: no se repite y la base lo llena sola.',
+          '`NOT NULL` ("no vacío") significa que esa columna es obligatoria. Sin esa marca, la columna puede quedar vacía. Un dato vacío en SQL se llama `NULL`.',
+          '**Ejemplo explicado línea por línea:** `id INTEGER PRIMARY KEY` es el número de cada proveedor. `nombre TEXT NOT NULL` es un texto obligatorio. `telefono TEXT` es opcional. Por eso el `INSERT` puede omitir el teléfono, y en la tabla aparece vacío.',
           'Diseñar bien las tablas es de lo más valioso que se aprende en bases de datos: de eso depende que después sea fácil hacerles preguntas.',
+          '**Error común:** olvidar las comas entre columnas o poner una coma de más después de la última. Ambas cosas dan `syntax error`. Cada columna termina en coma, menos la última antes del `)`.',
         ],
         codigo: [
           'CREATE TABLE proveedores (',
@@ -35,11 +38,12 @@ globalThis.Rutas.agregarLeccion(
           'Después agrégale dos filas, `Comidas` y `Bebidas`, y muestra la tabla.',
         ],
         codigo: [
-          '-- 1. Crea la tabla categorias',
+          '-- TODO 1: CREATE TABLE categorias con id (INTEGER PRIMARY KEY)',
+          '--         y nombre (TEXT NOT NULL)',
           '',
-          '-- 2. Agrega Comidas y Bebidas',
+          '-- TODO 2: INSERT INTO categorias las filas Comidas y Bebidas',
           '',
-          '-- 3. Muestra la tabla',
+          '-- TODO 3: muestra la tabla con SELECT',
           '',
         ].join('\n'),
         pruebas: [
@@ -59,9 +63,9 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'Muestras la tabla', condicion: 'filas.length === 2 && columnas.includes("nombre")' },
         ],
         pistas: [
-          'La tabla: `CREATE TABLE categorias (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL);`',
-          'Las filas: `INSERT INTO categorias (nombre) VALUES (\'Comidas\'), (\'Bebidas\');`',
-          'Y al final: `SELECT * FROM categorias;`',
+          'Son tres instrucciones: crear, llenar y mostrar. Copia la forma del ejemplo de proveedores, con menos columnas.',
+          'La tabla tiene dos columnas: `id INTEGER PRIMARY KEY` y `nombre TEXT NOT NULL`. Para las dos filas sirve un `INSERT` con dos paréntesis.',
+          'Casi listo: `CREATE TABLE categorias (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL);`, luego `INSERT INTO categorias (nombre) VALUES (\'Comidas\'), (...);` y `SELECT * FROM categorias;`',
         ],
         solucion: [
           'CREATE TABLE categorias (',
@@ -84,11 +88,12 @@ globalThis.Rutas.agregarLeccion(
           '3. Termina con una consulta que muestre el nombre de cada producto opinado (`productos.nombre`) y su `promedio` de estrellas. Necesitas `JOIN`, `AVG` y `GROUP BY`.',
         ],
         codigo: [
-          '-- 1. Crea la tabla opiniones',
+          '-- TODO 1: crea la tabla opiniones (id, producto_id, estrellas, comentario)',
           '',
-          '-- 2. Agrega al menos 3 opiniones',
+          '-- TODO 2: agrega al menos 3 opiniones; un mismo producto_id debe tener dos',
           '',
-          '-- 3. Nombre del producto y promedio de estrellas',
+          '-- TODO 3: une opiniones con productos y muestra productos.nombre',
+          '--         y AVG(estrellas) AS promedio, agrupando por producto',
           '',
         ].join('\n'),
         pruebas: [
@@ -115,8 +120,8 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'La tabla: `CREATE TABLE opiniones (id INTEGER PRIMARY KEY, producto_id INTEGER NOT NULL, estrellas INTEGER NOT NULL, comentario TEXT);`',
-          'Las filas: `INSERT INTO opiniones (producto_id, estrellas, comentario) VALUES (5, 5, \'Delicioso\'), (5, 4, \'Muy rico\'), (1, 3, \'Normal\');`',
+          'Haz una parte a la vez y ejecuta después de cada una. La tabla es como la de proveedores; la consulta, como la de "los mejores clientes".',
+          'La tabla: `CREATE TABLE opiniones (id INTEGER PRIMARY KEY, producto_id INTEGER NOT NULL, estrellas INTEGER NOT NULL, comentario TEXT);` Para las filas, un `INSERT` con varios paréntesis, como `(5, 5, \'Delicioso\'), (5, 4, \'Muy rico\'), ...`',
           'La consulta: `SELECT productos.nombre, AVG(opiniones.estrellas) AS promedio FROM opiniones JOIN productos ON opiniones.producto_id = productos.id GROUP BY productos.nombre;`',
         ],
         solucion: [

@@ -11,10 +11,13 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Tu primera instrucción en Python',
         texto: [
-          'Python es uno de los lenguajes más usados del mundo: con él se analizan datos, se automatizan tareas y se construye casi toda la inteligencia artificial.',
-          'La instrucción `print()` muestra un mensaje en la **consola**. El texto siempre va entre comillas.',
-          'Las líneas que empiezan con `#` son **comentarios**: notas para las personas, Python las ignora.',
-          'Presiona **Ejecutar**. La primera vez tarda unos segundos mientras se carga Python.',
+          'Mira el código del editor. La línea `print("¡Hola, mundo!")` le pide a Python que muestre el mensaje `¡Hola, mundo!`. Presiona **Ejecutar** y míralo aparecer abajo. La primera vez tarda unos segundos mientras se carga Python.',
+          'Un **programa** es una lista de instrucciones. Python las lee de arriba hacia abajo, una por una.',
+          '`print()` es una **instrucción** que muestra un mensaje en la **consola**. La consola es el recuadro donde aparecen los resultados.',
+          'El mensaje va entre comillas. Así Python sabe que es un **texto** y no una orden.',
+          'Las líneas que empiezan con `#` son **comentarios**: notas para las personas. Python las ignora.',
+          'Python es uno de los lenguajes más usados del mundo. Con él se analizan datos, se automatizan tareas y se construye casi toda la inteligencia artificial.',
+          '**Error común:** olvidar las comillas. Si escribes `print(Hola)`, Python cree que `Hola` es un nombre que tú creaste y responde `NameError: name \'Hola\' is not defined` (el nombre no existe). La solución es `print("Hola")`. Lo mismo pasa si escribes `Print` con mayúscula: Python distingue mayúsculas de minúsculas.',
         ],
         codigo: [
           '# Esto es un comentario: Python lo ignora.',
@@ -47,7 +50,14 @@ globalThis.Rutas.agregarLeccion(
           'Muestra **tres mensajes**, uno por línea: tu ciudad, tu comida favorita y tu equipo o pasatiempo favorito.',
           'Necesitas una instrucción `print()` por cada mensaje.',
         ],
-        codigo: '# Tres mensajes, tres líneas\n',
+        codigo: [
+          '# TODO: muestra tu ciudad',
+          '',
+          '# TODO: muestra tu comida favorita',
+          '',
+          '# TODO: muestra tu equipo o pasatiempo favorito',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Muestra al menos tres mensajes', condicion: 'len(salida) >= 3' },
           {
@@ -56,8 +66,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Cada mensaje necesita su propia línea con `print("...")`',
-          'Ejemplo de una línea: `print("Vivo en Manizales")` Ahora escribe dos más.',
+          'Son tres mensajes, así que necesitas tres instrucciones, una debajo de cada `# TODO`.',
+          'Cada mensaje usa `print("...")` con el texto entre comillas.',
+          'Ejemplo de la primera línea: `print("Vivo en Manizales")` Ahora escribe las otras dos igual, con tu comida y tu pasatiempo.',
         ],
         solucion: [
           'print("Vivo en Manizales")',

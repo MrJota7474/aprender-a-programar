@@ -8,9 +8,15 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Recetas que se reutilizan',
         texto: [
-          'Una **función** es un pedazo de código con nombre que puedes usar todas las veces que quieras.',
-          'Entre paréntesis recibe sus datos (se llaman **parámetros**) y con `return` devuelve un resultado.',
+          'Piensa en una receta de arepa: la escribes una vez y la usas cada mañana, cambiando solo el relleno. Las funciones son eso.',
+          'Una **función** es un pedazo de código con nombre que puedes usar todas las veces que quieras. Ya usas una: `console.log()`.',
+          'Entre paréntesis recibe sus datos. Esos nombres se llaman **parámetros**: son variables que solo existen dentro de la función.',
+          'Con `return` la función **devuelve** un resultado: lo entrega a quien la llamó, que puede mostrarlo o guardarlo.',
           'Crear la función no la ejecuta. Para usarla hay que **llamarla** escribiendo su nombre con paréntesis: `saludar("Juan")`.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 1: crea la función `saludar` con un parámetro, `nombre`. Línea 2: devuelve "Hola, " unido con ese nombre. Línea 3: la llave cierra la función.',
+          'Línea 5: llama a `saludar` con "Juan". Dentro, `nombre` vale "Juan", la función devuelve "Hola, Juan" y `console.log` lo muestra. Línea 6: la misma receta con otro dato.',
+          '**Error común:** olvidar el `return`. Si la línea 2 fuera solo `"Hola, " + nombre;`, la función calcularía el saludo y lo botaría. La consola mostraría `undefined` ("sin definir"), que significa "no hay valor". Solución: escribe `return` antes del resultado.',
         ],
         codigo: [
           'function saludar(nombre) {',
@@ -30,7 +36,7 @@ globalThis.Rutas.agregarLeccion(
         ],
         codigo: [
           'function doble(numero) {',
-          '  // Devuelve el número multiplicado por 2',
+          '  // TODO: devuelve (con return) el parámetro numero multiplicado por 2.',
           '}',
           '',
           'console.log(doble(4)); // debería mostrar 8',
@@ -61,7 +67,14 @@ globalThis.Rutas.agregarLeccion(
           'Los menores de 12 años pagan `8000`. Todos los demás pagan `15000`.',
           'Aquí se juntan dos cosas que ya sabes: funciones e `if`.',
         ],
-        codigo: '// Crea aquí la función precioEntrada\n',
+        codigo: [
+          '// TODO 1: crea la función precioEntrada con un parámetro llamado edad.',
+          '// TODO 2: si edad es menor que 12, devuelve 8000.',
+          '// TODO 3: si no, devuelve 15000.',
+          '',
+          '// Cuando la tengas, prueba: console.log(precioEntrada(8));',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'precioEntrada es una función', condicion: 'typeof precioEntrada === "function"' },
           { descripcion: 'precioEntrada(8) devuelve 8000', condicion: 'precioEntrada(8) === 8000' },
@@ -70,9 +83,9 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'precioEntrada(30) devuelve 15000', condicion: 'precioEntrada(30) === 15000' },
         ],
         pistas: [
-          'Empieza con el esqueleto: `function precioEntrada(edad) { }`',
-          'Adentro usa un `if (edad < 12)` que haga `return 8000;`',
-          'Después del `if`, escribe `return 15000;` para todos los demás.',
+          'Empieza con el esqueleto: `function precioEntrada(edad) { }`. Todo lo demás va dentro de esas llaves.',
+          'Adentro usa un `if (edad < 12)` que haga `return 8000;`. Cuando una función llega a un `return`, termina ahí.',
+          'Después del `if`, escribe `return 15000;` para todos los demás: solo llega a esa línea quien no entró al `if`.',
         ],
         solucion: [
           'function precioEntrada(edad) {',

@@ -37,6 +37,8 @@
             '**Encabezados en orden**: un solo `<h1>`, y luego `<h2>`, `<h3>`… sin saltarse niveles. El lector los usa como índice para saltar de sección en sección. **Contraste**: el texto debe distinguirse del fondo; las pautas piden una relación de **4.5 a 1** o más. Gris claro sobre blanco no la cumple.',
             '**Teclado**: lo que se puede tocar debe ser un `<button>` o un `<a href>`, porque esos los alcanza la tecla Tab y se activan con Enter. Un `<div>` con un clic no se puede usar con el teclado. **ARIA**: atributos extra para cuando el HTML no alcanza. El más común es `aria-label`, que le da nombre a un botón que solo tiene un ícono: `<button aria-label="Ver carrito">🛒</button>`.',
             'La regla de oro de ARIA: primero usa la etiqueta correcta de HTML; ARIA es para lo que falta. Ejecuta el ejemplo: todo lo que acabas de leer está ahí.',
+            '**Error común:** un `alt` que no dice nada, como `alt="imagen"` o `alt="foto1.png"`. No sale ningún error, pero el lector de pantalla dice "imagen" y la persona sigue sin saber qué hay. Describe lo que se ve, como se lo contarías a alguien por teléfono: "Pan francés recién horneado".',
+            'Para probarlo tú mismo: abre cualquier página y recórrela solo con la tecla Tab. Si hay algo que no puedes alcanzar o no sabes dónde estás, ahí hay un problema de accesibilidad.',
           ],
           codigo: [
             '<!DOCTYPE html>',
@@ -85,9 +87,11 @@
             '  </head>',
             '  <body>',
             '    <h1>Haz tu pedido</h1>',
+            '    <!-- TODO 1: a cada img ponle un alt que diga qué producto muestra. -->',
             '    <img src="pan.png">',
             '    <img src="leche.png">',
             '    <form>',
+            '      <!-- TODO 2: antes de cada input, un label con for igual a su id. -->',
             '      <input type="text" id="nombre" name="nombre">',
             '      <input type="tel" id="telefono" name="telefono">',
             '      <button type="submit">Pedir</button>',
@@ -99,6 +103,10 @@
             {
               descripcion: 'Las dos imágenes tienen un alt con texto',
               condicion: 'cuenta("img") === 2 && todos("img").every((img) => (img.atributo("alt") || "").trim().length > 0)',
+            },
+            {
+              descripcion: 'Cada alt describe su producto: uno menciona el pan y el otro la leche',
+              condicion: '/pan/i.test(atributo(\'img[src="pan.png"]\', "alt") || "") && /leche/i.test(atributo(\'img[src="leche.png"]\', "alt") || "")',
             },
             {
               descripcion: 'El campo del nombre tiene su label',

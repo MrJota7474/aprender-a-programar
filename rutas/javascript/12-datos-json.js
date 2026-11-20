@@ -16,6 +16,12 @@ globalThis.Rutas.agregarLeccion(
           'Es justo lo que vas a necesitar más adelante: los servicios de inteligencia artificial suelen recibir y responder en JSON.',
           '`JSON.parse()` convierte un texto JSON en un objeto, y `JSON.stringify()` hace el camino contrario.',
           'En JSON los nombres de las propiedades siempre van entre comillas dobles.',
+          'Como el JSON ya trae comillas dobles adentro, el texto completo se encierra con **comillas simples** `\'...\'`. En JavaScript un texto puede ir entre comillas dobles o simples; aquí se usan simples para que las dobles de adentro no lo corten.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 1: `texto` es un texto, no un objeto: si pidieras `texto.ciudad` darías con `undefined`. Línea 2: `JSON.parse` lo lee y arma un objeto de verdad.',
+          'Línea 3: ahora sí, `datos.ciudad` da "Cali". Línea 4: `temperatura` es un número de verdad, así que 29 + 1 da 30.',
+          'Línea 6: `JSON.stringify` convierte el objeto en el texto `{"listo":true}`, listo para enviar o guardar.',
+          '**Error común:** un JSON mal escrito. Si el texto usa comillas simples por dentro, como `{\'ciudad\': \'Cali\'}`, o le sobra una coma al final, `JSON.parse` falla. Con las comillas simples el mensaje dice `Expected property name or \'}\' in JSON` ("se esperaba el nombre de una propiedad o una }"), y con la coma de más dice `Expected double-quoted property name` ("se esperaba un nombre de propiedad entre comillas dobles"). Solución: revisa comillas dobles y comas.',
         ],
         codigo: [
           `const texto = '{"ciudad": "Cali", "temperatura": 29}';`,
@@ -37,7 +43,9 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           `const texto = '{"producto": "Café", "precio": 18000, "disponible": true}';`,
           '',
-          '// Convierte el texto en un objeto llamado datos y muestra el precio',
+          '// TODO 1: convierte texto en un objeto llamado datos.',
+          '',
+          '// TODO 2: muestra el precio que está dentro de datos.',
           '',
         ].join('\n'),
         pruebas: [
@@ -50,11 +58,14 @@ globalThis.Rutas.agregarLeccion(
             descripcion: 'Muestras el precio en la consola',
             condicion: 'salida.some((linea) => /18[.,]?000/.test(linea))',
           },
-          { descripcion: 'Usas JSON.parse', condicion: 'codigo.includes("JSON.parse")' },
+          {
+            descripcion: 'datos sale de JSON.parse(texto) (no lo escribes a mano)',
+            condicion: '/datos\\s*=\\s*JSON\\.parse\\(\\s*texto\\s*\\)/.test(codigo)',
+          },
         ],
         pistas: [
-          'La conversión es: `const datos = JSON.parse(texto);`',
-          'Ahora `datos` es un objeto y puedes pedirle una propiedad: `datos.precio`',
+          'Son dos pasos: primero convertir el texto en objeto, después pedirle una propiedad.',
+          'La conversión es: `const datos = JSON.parse(texto);`. Ahora `datos` es un objeto y puedes pedirle `datos.precio`',
           'Para mostrarlo: `console.log(datos.precio);`',
         ],
         solucion: [
@@ -75,7 +86,11 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           `const pedidos = '[{"producto": "Café", "valor": 18000}, {"producto": "Arepa", "valor": 3000}, {"producto": "Jugo", "valor": 4500}]';`,
           '',
-          '// Crea aquí la función totalVendido',
+          '// TODO 1: crea la función totalVendido(textoJson).',
+          '// TODO 2: dentro, convierte textoJson en una lista con JSON.parse.',
+          '// TODO 3: suma el valor de cada pedido y devuelve el total.',
+          '',
+          '// Para revisar: console.log(totalVendido(pedidos)); debe mostrar 25500',
           '',
         ].join('\n'),
         pruebas: [

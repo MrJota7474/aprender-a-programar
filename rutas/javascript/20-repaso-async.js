@@ -14,11 +14,15 @@ globalThis.Rutas.agregarLeccion(
         texto: [
           'Don Pepe quiere saber cuánta plata tiene guardada en cada categoría. Crea la función `async` llamada `valorInventario(categoria)`.',
           'Debe pedir `API + "/productos?categoria=" + categoria` y devolver la **suma de `precio * existencias`** de esos productos. Si la categoría no existe, devuelve `0`.',
+          'Lo que va después del `?` en la dirección se llama **parámetro de consulta**: es como decirle a la ventanilla "solo los de esta categoría". Por ejemplo, Bebidas debe dar `387500`.',
+          'Repasa: fetch (lección 19) y `reduce` (lección 16).',
         ],
         codigo: [
           'const API = "https://api.tienda-donpepe.co";',
           '',
           'async function valorInventario(categoria) {',
+          '  // TODO 1: pide los productos de esa categoría con fetch y conviértelos con .json().',
+          '  // TODO 2: suma precio * existencias de cada producto (empieza en 0) y devuelve el total.',
           '  return 0;',
           '}',
           '',
@@ -49,8 +53,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Pide con `await fetch(API + "/productos?categoria=" + categoria)` y luego `await respuesta.json()`.',
-          'Para sumar usa `reduce`: `productos.reduce((total, p) => total + p.precio * p.existencias, 0)`.',
+          'Son dos partes: pedir la lista (como en la lección 19) y reducirla a un solo número (como en la 16).',
+          'Pide con `await fetch(API + "/productos?categoria=" + categoria)` y luego `await respuesta.json()`. Para sumar usa `reduce` con valor inicial 0.',
+          'La suma queda `return productos.reduce((total, p) => total + p.precio * p.existencias, 0);`. Con una categoría vacía, el valor inicial 0 es la respuesta.',
         ],
         solucion: [
           'const API = "https://api.tienda-donpepe.co";',
@@ -74,6 +79,9 @@ globalThis.Rutas.agregarLeccion(
           'const API = "https://api.tienda-donpepe.co";',
           '',
           'async function pedidosPorCliente() {',
+          '  // TODO 1: pide /clientes y /pedidos (con Promise.all) y lee los dos con .json().',
+          '  // TODO 2: crea un objeto vacío y, por cada cliente, guarda cuántos pedidos',
+          '  //         tienen su cliente_id. Devuelve el objeto.',
           '  return {};',
           '}',
           '',
@@ -108,7 +116,7 @@ globalThis.Rutas.agregarLeccion(
         pistas: [
           'Pide las dos listas: `const [rc, rp] = await Promise.all([fetch(API + "/clientes"), fetch(API + "/pedidos")]);` y lee cada una con `await rc.json()`.',
           'Recorre los clientes y, por cada uno, cuenta con `pedidos.filter((p) => p.cliente_id === cliente.id).length`.',
-          'Guarda cada cuenta en un objeto: `conteo[cliente.nombre] = ...`.',
+          'Guarda cada cuenta en un objeto: `conteo[cliente.nombre] = ...`. Los corchetes usan el valor de `cliente.nombre` como nombre de la propiedad, igual que en la lección 16.',
         ],
         solucion: [
           'const API = "https://api.tienda-donpepe.co";',
@@ -139,8 +147,10 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           'const API = "https://api.tienda-donpepe.co";',
           '',
-          '// Devuelve los datos de la ruta, o el respaldo si el servicio falla',
           'async function pedirConRespaldo(ruta, respaldo) {',
+          '  // TODO 1: pide API + ruta con fetch.',
+          '  // TODO 2: si la respuesta no está ok, devuelve respaldo.',
+          '  // TODO 3: si está bien, devuelve sus datos con .json().',
           '  return respaldo;',
           '}',
           '',
@@ -178,8 +188,8 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Primero la respuesta: `const respuesta = await fetch(API + ruta);`',
-          'Si `!respuesta.ok`, `return respaldo;` (así el error 500 no se escapa).',
+          'Es casi igual a `nombreDeProducto` de la lección 19: cambia qué devuelves en cada caso.',
+          'Primero `const respuesta = await fetch(API + ruta);` y luego, si `!respuesta.ok`, `return respaldo;` (así el error 500 no se escapa).',
           'Si está bien, `return await respuesta.json();`',
         ],
         solucion: [

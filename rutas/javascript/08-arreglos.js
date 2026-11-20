@@ -8,9 +8,14 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Listas de valores',
         texto: [
+          'Si quieres guardar tres frutas, podrías crear `fruta1`, `fruta2` y `fruta3`. Pero ¿y si son cien? Para eso hay listas.',
           'Un **arreglo** (en inglés, **array**) es una lista de valores guardada en una sola variable. Se escribe entre corchetes `[ ]`, con los valores separados por comas.',
-          'Cada valor tiene una posición, y se cuenta **desde 0**: el primero es `frutas[0]`.',
-          '`.length` dice cuántos valores hay y `.push()` agrega uno al final.',
+          'Cada valor de la lista se llama **elemento** y tiene una **posición** (también se dice **índice**). Las posiciones se cuentan **desde 0**: el primero es `frutas[0]`, el segundo `frutas[1]`.',
+          '`.length` dice cuántos elementos hay y `.push()` agrega uno al final.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 1: crea la lista con 3 frutas. Línea 3: `frutas[0]` es la posición 0, o sea "mango". Línea 4: muestra 3, la cantidad de elementos.',
+          'Línea 6: agrega "maracuyá" al final; ahora la lista tiene 4. Aunque es `const`, la lista sí puede crecer: `const` solo impide cambiarla por **otra** lista.',
+          '**Error común:** pedir una posición que no existe. Con 3 frutas, `frutas[3]` no da error: da `undefined` ("sin definir"), porque las posiciones van de 0 a 2. Si ves `undefined`, revisa que estés contando desde 0.',
         ],
         codigo: [
           'const frutas = ["mango", "lulo", "guanábana"];',
@@ -29,7 +34,14 @@ globalThis.Rutas.agregarLeccion(
           'Crea un arreglo `ciudades` con los nombres de tres ciudades de Colombia.',
           'Muestra la primera ciudad y después muestra cuántas ciudades hay usando `.length`.',
         ],
-        codigo: '// Crea aquí el arreglo ciudades\n',
+        codigo: [
+          '// TODO 1: crea el arreglo ciudades con tres ciudades de Colombia.',
+          '',
+          '// TODO 2: muestra la primera ciudad (recuerda: se cuenta desde 0).',
+          '',
+          '// TODO 3: muestra cuántas ciudades hay, con .length.',
+          '',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'ciudades es un arreglo con 3 elementos',
@@ -37,12 +49,15 @@ globalThis.Rutas.agregarLeccion(
           },
           { descripcion: 'Muestras la primera ciudad', condicion: 'salida.includes(ciudades[0])' },
           { descripcion: 'Muestras cuántas hay (3)', condicion: 'salida.includes("3")' },
-          { descripcion: 'Usas .length', condicion: 'codigo.includes(".length")' },
+          {
+            descripcion: 'La cantidad sale de ciudades.length (no escribes 3 a mano)',
+            condicion: '/console\\.log\\(\\s*ciudades\\.length\\s*\\)/.test(codigo)',
+          },
         ],
         pistas: [
+          'Fíjate en la línea 1 del ejemplo de la Idea: un arreglo va entre corchetes y cada texto entre comillas.',
           'El arreglo se crea así: `const ciudades = ["Cali", "Tunja", "Leticia"];`',
-          'La primera está en la posición 0: `console.log(ciudades[0]);`',
-          'La cantidad: `console.log(ciudades.length);`',
+          'La primera está en la posición 0: `console.log(ciudades[0]);` y la cantidad sale con `console.log(ciudades.length);`',
         ],
         solucion: [
           'const ciudades = ["Cali", "Tunja", "Leticia"];',
@@ -60,9 +75,9 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           'const mercado = ["arroz", "panela"];',
           '',
-          '// 1. Agrega "café" y "huevos"',
+          '// TODO 1: agrega "café" y después "huevos" con .push().',
           '',
-          '// 2. Guarda el último elemento en la variable ultimo',
+          '// TODO 2: crea ultimo con el último elemento, usando mercado.length - 1.',
           '',
         ].join('\n'),
         pruebas: [
@@ -78,7 +93,7 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Cada elemento se agrega con su propio push: `mercado.push("café");`',
+          'Son dos tareas: primero agregar, después leer. Cada elemento se agrega con su propio push: `mercado.push("café");`',
           'La posición del último es `mercado.length - 1`.',
           '`const ultimo = mercado[mercado.length - 1];`',
         ],

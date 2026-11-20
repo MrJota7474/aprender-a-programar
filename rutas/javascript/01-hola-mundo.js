@@ -12,9 +12,15 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Tu primera instrucción',
         texto: [
-          'Programar es darle instrucciones al computador, una por línea.',
-          'La instrucción `console.log()` muestra un mensaje en la **consola**. El texto siempre va entre comillas.',
-          'Las líneas que empiezan con `//` son **comentarios**: notas para las personas, el computador las ignora.',
+          'Mira el código de la derecha. Tiene dos instrucciones y cada una muestra un mensaje.',
+          '**Programar** es darle instrucciones al computador, una por línea. El computador las hace en orden, de arriba hacia abajo.',
+          'La **consola** es el recuadro donde aparecen los mensajes que muestra tu programa.',
+          'La instrucción `console.log()` muestra en la consola lo que pongas dentro de los paréntesis. Un texto siempre va entre comillas: `"así"`.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 1: empieza con `//`, así que es un **comentario**: una nota para las personas. El computador la ignora.',
+          'Línea 2: `console.log("¡Hola, mundo!");` muestra ¡Hola, mundo! en la consola. El `;` del final marca dónde termina la instrucción.',
+          'Línea 3: hace lo mismo con otro mensaje. Por eso ves dos líneas en la consola.',
+          '**Error común:** olvidar las comillas. Si escribes `console.log(Hola);`, JavaScript cree que `Hola` es el nombre de algo guardado y responde `Hola is not defined` ("Hola no está definido"). Solución: `console.log("Hola");`',
           'Presiona **Ejecutar** para ver qué hace este código. Luego cambia los mensajes y ejecútalo otra vez.',
         ],
         codigo: [
@@ -30,7 +36,11 @@ globalThis.Rutas.agregarLeccion(
           'Ahora tú. Escribe una instrucción que muestre exactamente este mensaje: `Hola, Colombia`',
           'Ojo: el computador es muy estricto con las mayúsculas, la coma y los espacios.',
         ],
-        codigo: '// Escribe tu código debajo de esta línea\n',
+        codigo: [
+          '// TODO: escribe aquí una línea con console.log()',
+          '// que muestre el mensaje Hola, Colombia (entre comillas).',
+          '',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'Muestra el mensaje Hola, Colombia',
@@ -51,7 +61,14 @@ globalThis.Rutas.agregarLeccion(
           'Muestra **tres mensajes**, uno por línea: tu ciudad, tu comida favorita y tu equipo o pasatiempo favorito.',
           'Necesitas una instrucción `console.log()` por cada mensaje.',
         ],
-        codigo: '// Tres mensajes, tres líneas\n',
+        codigo: [
+          '// TODO 1: muestra tu ciudad.',
+          '',
+          '// TODO 2: muestra tu comida favorita.',
+          '',
+          '// TODO 3: muestra tu equipo o pasatiempo favorito.',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Muestra al menos tres mensajes', condicion: 'salida.length >= 3' },
           {
@@ -60,8 +77,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
+          'Son tres mensajes distintos, así que necesitas tres instrucciones, una debajo de otra.',
           'Cada mensaje necesita su propia línea con `console.log("...");`',
-          'Ejemplo de una línea: `console.log("Vivo en Pereira");` Ahora escribe dos más.',
+          'Ejemplo de una línea: `console.log("Vivo en Pereira");` Ahora escribe dos más con tus otros datos.',
         ],
         solucion: [
           'console.log("Vivo en Pereira");',

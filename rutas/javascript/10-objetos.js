@@ -8,9 +8,14 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Datos que van juntos',
         texto: [
+          'Piensa en el carné del colegio: nombre, edad y ciudad, todo sobre la misma persona. Con tres variables sueltas sería fácil confundirlas con las de otra persona.',
           'Un **objeto** agrupa varios datos sobre una misma cosa. Cada dato tiene un nombre (la **propiedad**) y un valor.',
           'Se escribe entre llaves `{ }`, con pares `propiedad: valor` separados por comas.',
-          'Para leer o cambiar una propiedad se usa un punto: `estudiante.nombre`.',
+          'Para leer o cambiar una propiedad se usa un punto: `estudiante.nombre` se lee "el nombre del estudiante".',
+          '**Ejemplo explicado línea por línea:**',
+          'Líneas 1 a 5: crean el objeto con tres propiedades. Línea 7: lee solo `nombre` y muestra "Andrés".',
+          'Línea 9: cambia la edad a 17. Línea 10: `grado` no existía, así que se agrega. Línea 11: muestra el objeto completo con sus cuatro propiedades.',
+          '**Error común:** escribir mal el nombre de una propiedad. `estudiante.Nombre` (con mayúscula) no da error: da `undefined`, porque esa propiedad no existe. Si ves `undefined`, compara letra por letra con el objeto.',
         ],
         codigo: [
           'const estudiante = {',
@@ -33,7 +38,12 @@ globalThis.Rutas.agregarLeccion(
           'Crea un objeto `producto` con dos propiedades: `nombre` (un texto) y `precio` (un número).',
           'Después muestra en la consola solo el nombre del producto.',
         ],
-        codigo: '// Crea aquí el objeto producto\n',
+        codigo: [
+          '// TODO 1: crea el objeto producto con las propiedades nombre (texto) y precio (número).',
+          '',
+          '// TODO 2: muestra solo el nombre, usando un punto.',
+          '',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'producto es un objeto',
@@ -42,8 +52,13 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'producto.nombre es un texto', condicion: 'typeof producto.nombre === "string"' },
           { descripcion: 'producto.precio es un número', condicion: 'typeof producto.precio === "number"' },
           { descripcion: 'Muestras el nombre del producto', condicion: 'salida.includes(producto.nombre)' },
+          {
+            descripcion: 'Lees el nombre con producto.nombre',
+            condicion: '/console\\.log\\(\\s*producto\\.nombre\\s*\\)/.test(codigo)',
+          },
         ],
         pistas: [
+          'Copia la forma del objeto `estudiante` de la Idea, con otras propiedades: `nombre` y `precio`.',
           'El objeto se crea con llaves: `const producto = { nombre: "Arepa", precio: 3000 };`',
           'Para mostrar solo el nombre: `console.log(producto.nombre);`',
         ],
@@ -59,6 +74,7 @@ globalThis.Rutas.agregarLeccion(
           'Este reto junta casi todo lo que aprendiste: funciones, arreglos, bucles y objetos.',
           'Crea la función `totalCarrito` que recibe una lista de productos y devuelve la suma de sus precios.',
           'Debe funcionar con **cualquier** lista, incluso una vacía (en ese caso devuelve 0).',
+          'Con el `carrito` de ejemplo, `totalCarrito(carrito)` debe devolver `9000`. Es el mismo acumulador de la lección de bucles; la diferencia es que cada elemento es un objeto, así que el precio se lee con `producto.precio`.',
         ],
         codigo: [
           'const carrito = [',
@@ -67,7 +83,11 @@ globalThis.Rutas.agregarLeccion(
           '  { nombre: "Buñuelo", precio: 1500 }',
           '];',
           '',
-          '// Crea aquí la función totalCarrito',
+          '// TODO 1: crea la función totalCarrito con un parámetro (la lista).',
+          '// TODO 2: dentro, empieza un total en 0 y recórrela con for...of.',
+          '// TODO 3: suma el precio de cada producto y devuelve el total.',
+          '',
+          '// Para probarla: console.log(totalCarrito(carrito));',
           '',
         ].join('\n'),
         pruebas: [
@@ -81,8 +101,8 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Empieza así: `function totalCarrito(lista) { let total = 0; ... return total; }`',
-          'Recorre la lista con `for (const producto of lista) { }`',
+          'Junta dos cosas que ya hiciste: una función con `return` y el bucle que acumulaba precios en la lección de bucles.',
+          'Empieza así: `function totalCarrito(lista) { let total = 0; ... return total; }` y en el medio recorre con `for (const producto of lista) { }`',
           'En cada vuelta suma el precio: `total = total + producto.precio;`',
         ],
         solucion: [

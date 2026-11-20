@@ -8,9 +8,11 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Tres tablas a la vez',
         texto: [
-          'Un pedido conecta a un cliente con un producto. Para ver los dos nombres se usan dos `JOIN`, uno después del otro.',
-          'Como las dos tablas tienen una columna `nombre`, se les pone un alias con `AS` para distinguirlas en el resultado.',
-          'Y ya con las tablas unidas se puede calcular: la cantidad está en `pedidos` y el precio en `productos`, así que el valor del pedido es `pedidos.cantidad * productos.precio`.',
+          'Ejecuta el código: cada fila dice quién compró, qué compró y cuánto pagó. Esos tres datos viven en tres tablas distintas.',
+          'Un pedido conecta a un cliente con un producto: guarda `cliente_id` y `producto_id`. Para ver los dos nombres se usan dos `JOIN`, uno después del otro.',
+          '**Ejemplo explicado línea por línea:** `FROM pedidos` empieza por los pedidos. El primer `JOIN` pega los datos del cliente de cada pedido; el segundo, los del producto. En el `SELECT`, `clientes.nombre AS cliente` y `productos.nombre AS producto` llevan alias porque las dos columnas se llaman `nombre` y en el resultado no se distinguirían.',
+          'Con las tablas unidas se puede calcular: la cantidad está en `pedidos` y el precio en `productos`, así que el valor del pedido es `pedidos.cantidad * productos.precio`.',
+          '**Error común:** olvidar el `ON` de un `JOIN`. Sin él, SQL une **cada** pedido con **cada** producto y el resultado se llena de filas que no tienen sentido (10 pedidos por 10 productos dan 100 filas). Si ves muchas más filas de las esperadas, revisa los `ON`.',
         ],
         codigo: [
           'SELECT clientes.nombre AS cliente,',
@@ -28,7 +30,12 @@ globalThis.Rutas.agregarLeccion(
           'Muestra, para cada pedido: `pedidos.id`, `productos.nombre` y una columna `total` con el valor del pedido (cantidad por precio).',
           'Solo necesitas unir `pedidos` con `productos`.',
         ],
-        codigo: '-- id del pedido, nombre del producto y total\n',
+        codigo: [
+          '-- TODO: muestra pedidos.id, productos.nombre y la cuenta',
+          '--       pedidos.cantidad * productos.precio con el alias total',
+          '-- TODO: une pedidos con productos con JOIN ... ON ...',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'La tercera columna se llama total', condicion: 'columnas[2] === "total"' },
           {
@@ -38,8 +45,8 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'La unión es `FROM pedidos JOIN productos ON pedidos.producto_id = productos.id`',
-          'La columna calculada es `pedidos.cantidad * productos.precio AS total`',
+          'Es el ejemplo con un solo `JOIN`: aquí no hace falta la tabla de clientes.',
+          'La unión es `FROM pedidos JOIN productos ON pedidos.producto_id = productos.id`, y la columna calculada lleva `AS total`.',
           'El `SELECT` completo: `SELECT pedidos.id, productos.nombre, pedidos.cantidad * productos.precio AS total`',
         ],
         solucion: [
@@ -56,7 +63,13 @@ globalThis.Rutas.agregarLeccion(
           'Muestra cuánto ha gastado cada cliente que ha hecho pedidos: `clientes.nombre` y una columna `gastado` con la suma del valor de todos sus pedidos.',
           'Ordena del que más ha gastado al que menos.',
         ],
-        codigo: '-- Cuánto ha gastado cada cliente, de mayor a menor\n',
+        codigo: [
+          '-- TODO: une pedidos con clientes y con productos (dos JOIN, como en el ejemplo)',
+          '-- TODO: en el SELECT, clientes.nombre y la SUMA de cantidad * precio AS gastado',
+          '-- TODO: agrupa por cliente con GROUP BY',
+          '-- TODO: ordena por gastado de mayor a menor',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Las columnas son nombre y gastado', condicion: 'columnas.join() === "nombre,gastado"' },
           {
@@ -67,9 +80,9 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'Usas GROUP BY', condicion: '/\\bGROUP\\s+BY\\b/.test(codigo)' },
         ],
         pistas: [
-          'Parte de la consulta del primer paso, con sus dos `JOIN`.',
-          'En el `SELECT`: `clientes.nombre, SUM(pedidos.cantidad * productos.precio) AS gastado`',
-          'Al final: `GROUP BY clientes.nombre` y después `ORDER BY gastado DESC`',
+          'Parte de la consulta del ejemplo, con sus dos `JOIN`: ya tiene el valor de cada pedido. Falta juntar los pedidos de cada cliente.',
+          'Juntar por cliente es `GROUP BY`, y sumar el valor de sus pedidos es `SUM(pedidos.cantidad * productos.precio)`.',
+          'En el `SELECT`: `clientes.nombre, SUM(pedidos.cantidad * productos.precio) AS gastado`. Al final: `GROUP BY clientes.nombre` y `ORDER BY gastado DESC;`',
         ],
         solucion: [
           'SELECT clientes.nombre, SUM(pedidos.cantidad * productos.precio) AS gastado',

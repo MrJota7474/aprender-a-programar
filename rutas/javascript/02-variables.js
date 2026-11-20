@@ -8,9 +8,16 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Cajas con nombre',
         texto: [
-          'Una **variable** es una caja con nombre donde guardas un valor para usarlo después.',
-          'Con `let` creas una variable cuyo valor **puede cambiar**. Con `const` creas una que **no cambia**.',
+          'Imagina una caja con una etiqueta que dice `ciudad`. Adentro guardas el texto "Medellín". Cuando necesites la ciudad, buscas la caja por su etiqueta.',
+          'Eso es una **variable**: un nombre que guarda un **valor** (un dato: un texto, un número...) para usarlo después.',
+          'Con `let` creas una variable cuyo valor **puede cambiar**. Con `const` creas una **constante**: una variable que **no cambia**.',
+          'El signo `=` no significa "es igual" como en matemáticas. Significa "guarda": `let ciudad = "Medellín";` se lee "crea la caja ciudad y guarda Medellín adentro".',
           'Los textos van entre comillas; los números, sin comillas.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 1: crea la variable `ciudad` y guarda "Medellín". Línea 2: muestra lo que hay en la caja. Va **sin comillas**: con comillas mostraría la palabra ciudad.',
+          'Línea 4: cambia el contenido de la caja a "Cali". No se repite `let`, porque la caja ya existe.',
+          'Línea 7: crea la constante `pais`. Si después intentaras `pais = "Perú";`, JavaScript no lo permitiría.',
+          '**Error común:** cambiar una constante. Si escribes `const pais = "Colombia";` y luego `pais = "Perú";`, verás `Assignment to constant variable` ("asignación a una variable constante"). Solución: si el valor debe cambiar, créalo con `let`.',
           'Ejecuta el código y fíjate cómo `ciudad` cambia de valor.',
         ],
         codigo: [
@@ -31,7 +38,14 @@ globalThis.Rutas.agregarLeccion(
           'Crea una variable `nombre` con tu nombre (un texto) y una variable `edad` con tu edad (un número).',
           'Después muestra las dos en la consola.',
         ],
-        codigo: '// Crea aquí tus variables\n',
+        codigo: [
+          '// TODO 1: crea la variable nombre con tu nombre (entre comillas).',
+          '',
+          '// TODO 2: crea la variable edad con tu edad (sin comillas).',
+          '',
+          '// TODO 3: muestra las dos variables con console.log().',
+          '',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'Existe la variable nombre y es un texto',
@@ -60,12 +74,17 @@ globalThis.Rutas.agregarLeccion(
           'Un tinto costaba 1500 pesos, pero subió a 2000.',
           'Cambia el valor de `precio` a `2000` y muéstralo otra vez.',
           'Además crea una constante `moneda` con el texto `"COP"`.',
+          'Al ejecutar, la consola debe mostrar `1500` y debajo `2000`.',
         ],
         codigo: [
           'let precio = 1500;',
           'console.log(precio);',
           '',
-          '// Cambia el precio a 2000 y muéstralo de nuevo',
+          '// TODO 1: cambia el precio a 2000 (sin volver a escribir let).',
+          '',
+          '// TODO 2: muestra el precio otra vez.',
+          '',
+          '// TODO 3: crea la constante moneda con el texto "COP".',
           '',
         ].join('\n'),
         pruebas: [

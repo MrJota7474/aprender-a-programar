@@ -11,6 +11,11 @@ globalThis.Rutas.agregarLeccion(
           'La **desestructuración** saca varias propiedades de un objeto (o varios elementos de un arreglo) en una sola línea. En vez de `const nombre = producto.nombre;` escribes `const { nombre } = producto;`.',
           'Con objetos se usan llaves y los **nombres de las propiedades**. Con arreglos se usan corchetes y cuenta el **orden**. Puedes dar un valor por defecto con `=`, que se usa si el dato no existe.',
           'El operador **spread** `...` "esparce" el contenido de un arreglo u objeto dentro de otro. Sirve para copiar o unir sin modificar el original: `{ ...producto, precio: 4000 }` es un objeto nuevo igual al producto, pero con otro precio.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 2: crea tres variables de una vez. `nombre` y `precio` salen de `producto`; `stock` no existe en el objeto, así que toma el valor por defecto, 0.',
+          'Línea 5: con arreglos manda la posición: `primero` recibe "tinto" y `segundo` recibe "pan". "huevo" se ignora.',
+          'Línea 9: `[...frios, "tinto"]` arma una lista nueva con los elementos de `frios` y uno más. Línea 12: copia `producto` y, como `precio` va después, reemplaza el de la copia. El original sigue en 3000.',
+          '**Error común:** desestructurar con un nombre que no existe. `const { valor } = producto;` no da error, pero `valor` queda en `undefined`, porque la propiedad se llama `precio`. Los nombres entre llaves deben ser iguales a los del objeto.',
         ],
         codigo: [
           'const producto = { nombre: "Arepa", precio: 3000 };',
@@ -38,7 +43,9 @@ globalThis.Rutas.agregarLeccion(
         codigo: [
           'const producto = { nombre: "Buñuelo", precio: 1500, stock: 12 };',
           '',
-          '// Saca nombre y precio con desestructuración y muéstralos',
+          '// TODO 1: en una sola línea, saca nombre y precio de producto (con llaves a la izquierda del =).',
+          '',
+          '// TODO 2: muestra nombre y precio en la misma línea de la consola.',
           '',
         ].join('\n'),
         pruebas: [
@@ -78,7 +85,8 @@ globalThis.Rutas.agregarLeccion(
           'const original = { nombre: "Tinto", precio: 1500, stock: 40 };',
           '',
           'function actualizarPrecio(producto, nuevoPrecio) {',
-          '  // Devuelve una copia con el precio nuevo',
+          '  // TODO: devuelve un objeto NUEVO con todo lo de producto',
+          '  // y el precio cambiado por nuevoPrecio. No toques producto.',
           '  return null;',
           '}',
           '',
@@ -110,9 +118,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Copiar y cambiar una propiedad se hace en un solo paso con spread: `{ ...producto, precio: nuevoPrecio }`',
-          'Lo que va después del spread tiene prioridad: pisa la propiedad `precio` de la copia.',
-          'No escribas `producto.precio = ...`: eso cambiaría el original.',
+          'No escribas `producto.precio = ...`: eso cambiaría el original. Necesitas armar un objeto nuevo, como en la línea 12 de la Idea.',
+          'Copiar y cambiar una propiedad se hace en un solo paso con spread `...`. Lo que va después del spread tiene prioridad: pisa la propiedad `precio` de la copia.',
+          'La línea es `return { ...producto, precio: nuevoPrecio };`',
         ],
         solucion: [
           'const original = { nombre: "Tinto", precio: 1500, stock: 40 };',

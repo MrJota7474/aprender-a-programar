@@ -8,10 +8,16 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'El mismo SQL, otro motor',
         texto: [
-          'Todo lo que has escrito en esta ruta corre en **SQLite**: una base de datos que vive en un solo archivo, sin servidor. Es la que trae tu celular y la que usa esta app. En las empresas (y en el certificado "Relational Database" de freeCodeCamp) se usa mucho **PostgreSQL**: un servidor al que se conectan muchos programas a la vez, con usuarios y permisos.',
-          'El SQL es casi el mismo: `SELECT`, `JOIN`, `GROUP BY`, `INSERT`, `ALTER TABLE ... ADD COLUMN` funcionan igual. Cambian sobre todo los **tipos**: para un id que se numera solo, PostgreSQL usa `SERIAL` (o la forma moderna `INTEGER GENERATED ALWAYS AS IDENTITY`) y SQLite usa `INTEGER PRIMARY KEY`. Para textos con límite, `VARCHAR(40)`: PostgreSQL no deja pasar el texto número 41; SQLite acepta el tipo pero **no** lo hace cumplir. `BOOLEAN` guarda `TRUE` o `FALSE` en PostgreSQL; SQLite lo acepta pero guarda 1 y 0.',
-          'Otra diferencia que confunde: en PostgreSQL los textos van **siempre** entre comillas simples (`\'Bogotá\'`); las comillas dobles son para nombres de tablas y columnas. SQLite perdona ese error; PostgreSQL no.',
-          'A PostgreSQL se entra desde la terminal con **psql**, por ejemplo `psql --username=freecodecamp --dbname=postgres` (así arranca el curso de freeCodeCamp). Dentro, además del SQL (que siempre termina en `;`), hay comandos con barra: `\\l` lista las bases, `\\c tienda` se conecta a una, `\\d` lista las tablas, `\\d productos` describe una tabla y `\\q` sale. **Aquí no hay un PostgreSQL de verdad**: los ejercicios corren en SQLite, y por eso practicamos justo lo que cambia al pasar de uno a otro.',
+          'Ejecuta el código y mira la columna `abierto`: escribiste `TRUE` y `FALSE`, pero SQLite guardó `1` y `0`. Un **motor** de base de datos es el programa que guarda los datos y corre tus consultas, y cada motor tiene sus pequeñas diferencias.',
+          'Todo lo que has escrito en esta ruta corre en **SQLite**: una base de datos que vive en un solo archivo, sin servidor. Es la que trae tu celular y la que usa esta app.',
+          'En las empresas (y en el certificado "Relational Database" de freeCodeCamp) se usa mucho **PostgreSQL**. Es un **servidor**: un programa siempre encendido al que se conectan muchos programas a la vez, con usuarios y permisos.',
+          'El SQL es casi el mismo: `SELECT`, `JOIN`, `GROUP BY`, `INSERT` y `ALTER TABLE ... ADD COLUMN` funcionan igual. Lo que más cambia son los **tipos** de las columnas:',
+          '- Id que se numera solo: PostgreSQL usa `SERIAL` (o la forma moderna `INTEGER GENERATED ALWAYS AS IDENTITY`). SQLite usa `INTEGER PRIMARY KEY`.',
+          '- Texto con límite, `VARCHAR(40)`: PostgreSQL no deja guardar un texto de 41 caracteres. SQLite acepta el tipo, pero **no** hace cumplir el límite.',
+          '- `BOOLEAN` (verdadero o falso): PostgreSQL guarda `TRUE` o `FALSE`. SQLite lo acepta, pero guarda 1 y 0.',
+          'A PostgreSQL se entra desde la terminal con **psql**, por ejemplo `psql --username=freecodecamp --dbname=postgres` (así arranca el curso de freeCodeCamp). Dentro hay comandos con barra: `\\l` lista las bases, `\\c tienda` se conecta a una, `\\d` lista las tablas, `\\d productos` describe una tabla y `\\q` sale.',
+          '**Aquí no hay un PostgreSQL de verdad**: los ejercicios corren en SQLite. Por eso practicamos justo lo que cambia al pasar de uno a otro.',
+          '**Error común:** usar comillas dobles para un texto, como `WHERE ciudad = "Bogotá"`. SQLite lo perdona, pero PostgreSQL responde `column "Bogotá" does not exist`: allá las comillas dobles son para nombres de columnas. Los textos van **siempre** entre comillas simples: `\'Bogotá\'`.',
         ],
         codigo: [
           '-- SQLite acepta estos tipos de PostgreSQL (aunque no los cumpla igual)',
@@ -91,14 +97,20 @@ globalThis.Rutas.agregarLeccion(
           'Reescríbela para que funcione **igual en los dos motores**: pasa a minúsculas tanto el nombre como lo que se busca, con la función `LOWER()`, que existe en ambos. Muestra las columnas `nombre` y `precio`.',
           'Un detalle: en SQLite `LOWER` solo cambia las letras sin tilde (ASCII), así que `PIÑA` queda `piÑa`; PostgreSQL sí convierte la Ñ y las vocales con tilde.',
         ],
-        codigo: ["SELECT nombre, precio", 'FROM productos', "WHERE nombre LIKE '%AREPA%';"].join('\n'),
+        codigo: [
+          '-- TODO: cambia el WHERE para pasar a minúsculas con LOWER()',
+          '--       tanto el nombre como el texto que se busca',
+          'SELECT nombre, precio',
+          'FROM productos',
+          "WHERE nombre LIKE '%AREPA%';",
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Las columnas son nombre y precio', condicion: 'columnas.join() === "nombre,precio"' },
           {
             descripcion: 'Encuentra la arepa',
             condicion: `filas.length === 1 && mismasFilas("SELECT nombre, precio FROM productos WHERE nombre LIKE '%arepa%'")`,
           },
-          { descripcion: 'Usa LOWER() para no depender de las mayúsculas', condicion: 'codigo.includes("LOWER(")' },
+          { descripcion: 'Usa LOWER() para no depender de las mayúsculas', condicion: '/LOWER\\(\\s*NOMBRE\\s*\\)\\s+LIKE\\s+LOWER\\(/.test(codigo)' },
           { descripcion: 'No usa ILIKE (SQLite no lo tiene)', condicion: '!codigo.includes("ILIKE")' },
         ],
         pistas: [

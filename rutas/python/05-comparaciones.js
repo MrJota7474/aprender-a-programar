@@ -8,10 +8,12 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Verdadero o falso',
         texto: [
-          'Al comparar dos valores, el resultado es `True` (verdadero) o `False` (falso), con la primera letra en mayúscula. A esos dos valores se les llama **booleanos**.',
-          'Comparadores: `==` (igual), `!=` (diferente), `>` (mayor), `<` (menor), `>=` (mayor o igual), `<=` (menor o igual).',
-          'Ojo: un solo `=` guarda un valor; dos `==` preguntan si dos valores son iguales.',
+          'Pregúntale a Python "¿5 es mayor que 3?" escribiendo `print(5 > 3)`. Responde `True`, que significa **verdadero**. Si preguntas `print(10 >= 18)`, responde `False`: **falso**.',
+          '`True` y `False` se escriben con la primera letra en mayúscula. A esos dos valores se les llama **booleanos**.',
+          'Los signos para comparar son: `==` (igual), `!=` (diferente), `>` (mayor), `<` (menor), `>=` (mayor o igual) y `<=` (menor o igual).',
+          'El resultado de una comparación se puede guardar en una variable: `es_alto = estatura > 180` deja en `es_alto` un `True` o un `False`.',
           'Para unir comparaciones Python usa palabras: `and` (**y**: las dos deben cumplirse), `or` (**o**: basta con una) y `not` (**no**: lo contrario).',
+          '**Error común:** confundir `=` con `==`. Un solo `=` guarda un valor; dos `==` preguntan si son iguales. Si escribes `print(5 = 5)`, Python responde con un `SyntaxError` (un error de escritura). Lo correcto es `print(5 == 5)`.',
         ],
         codigo: [
           'print(5 > 3)',
@@ -30,7 +32,7 @@ globalThis.Rutas.agregarLeccion(
           'Crea la variable `es_mayor_de_edad` comparando `edad` con 18.',
           'Debe quedar en `True` si la edad es 18 o más, y en `False` si no. No escribas `True` o `False` a mano: deja que la comparación lo calcule.',
         ],
-        codigo: ['edad = 17', '', '# Crea es_mayor_de_edad comparando la edad con 18', ''].join('\n'),
+        codigo: ['edad = 17', '', '# TODO: crea es_mayor_de_edad comparando edad con 18 (sin escribir True ni False)', ''].join('\n'),
         pruebas: [
           {
             descripcion: 'es_mayor_de_edad vale False (porque la edad es 17)',
@@ -63,21 +65,27 @@ globalThis.Rutas.agregarLeccion(
           'edad = 15',
           'tiene_boleta = True',
           '',
-          '# Crea puede_entrar',
+          '# TODO: crea puede_entrar (14 años o más Y tiene boleta)',
           '',
-          '# Crea paga_menos',
+          '# TODO: crea paga_menos (menos de 12 años O 60 o más)',
           '',
         ].join('\n'),
         pruebas: [
-          { descripcion: 'puede_entrar vale True', condicion: 'puede_entrar is True' },
-          { descripcion: 'paga_menos vale False', condicion: 'paga_menos is False' },
-          { descripcion: 'Usas and para el "y"', condicion: 're.search(r"\\band\\b", codigo) is not None' },
-          { descripcion: 'Usas or para el "o"', condicion: 're.search(r"\\bor\\b", codigo) is not None' },
+          { descripcion: 'Una persona de 15 años con boleta puede entrar (True)', condicion: 'puede_entrar is True' },
+          { descripcion: 'Una persona de 15 años no paga menos (False)', condicion: 'paga_menos is False' },
+          {
+            descripcion: 'puede_entrar se calcula con and, usando edad y tiene_boleta',
+            condicion: 're.search(r"puede_entrar\\s*=[^\\n]*edad[^\\n]*\\band\\b|puede_entrar\\s*=[^\\n]*\\band\\b[^\\n]*edad", codigo) is not None',
+          },
+          {
+            descripcion: 'paga_menos se calcula con or, comparando la edad dos veces',
+            condicion: 're.search(r"paga_menos\\s*=[^\\n]*edad[^\\n]*\\bor\\b[^\\n]*edad", codigo) is not None',
+          },
         ],
         pistas: [
-          'La primera une dos condiciones con `and`: `edad >= 14 and tiene_boleta`',
-          'La segunda une dos comparaciones con `or`: `edad < 12 or edad >= 60`',
-          'Guarda cada una: `puede_entrar = edad >= 14 and tiene_boleta`',
+          'Cada variable une dos condiciones. "Y" significa que deben cumplirse las dos; "o" que basta con una.',
+          'Usa `and` para la primera y `or` para la segunda. Las comparaciones son `>=` y `<`.',
+          'Casi listo: `puede_entrar = edad >= 14 and tiene_boleta` y `paga_menos = edad < 12 or edad >= ...`',
         ],
         solucion: [
           'edad = 15',

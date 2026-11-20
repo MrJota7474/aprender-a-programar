@@ -8,10 +8,12 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Filas nuevas',
         texto: [
-          'Hasta ahora solo leíste datos. Con `INSERT INTO` agregas filas nuevas a una tabla.',
-          'Primero van las columnas entre paréntesis y después, con `VALUES`, los valores **en el mismo orden**.',
-          'No hace falta poner el `id`: como es la clave de la tabla, la base le asigna el siguiente número.',
+          'La tienda empezó a vender pandebono. Ejecuta el código y busca la última fila de la tabla: ahí está el producto nuevo.',
+          'Hasta ahora solo leíste datos. Con `INSERT INTO` ("insertar en") agregas filas nuevas a una tabla.',
+          '**Ejemplo explicado línea por línea:** `INSERT INTO productos (nombre, categoria, precio, existencias)` dice en qué tabla y qué columnas vas a llenar. `VALUES (\'Pandebono\', \'Comidas\', 2000, 50)` da los valores **en el mismo orden**: el primer valor va a la primera columna, y así. El `SELECT` de abajo solo sirve para ver cómo quedó la tabla.',
+          'No hace falta poner el `id`: es el número que identifica cada fila (se llama **clave**), y la base le asigna el siguiente número automáticamente.',
           'En esta página la base vuelve a su estado original cada vez que presionas Ejecutar, así que puedes practicar sin miedo a dañar nada.',
+          '**Error común:** dar más o menos valores que columnas. Si nombras 4 columnas y das 3 valores, verás `3 values for 4 columns` (3 valores para 4 columnas). Cuenta las dos listas: deben tener el mismo largo y el mismo orden.',
         ],
         codigo: [
           'INSERT INTO productos (nombre, categoria, precio, existencias)',
@@ -27,7 +29,13 @@ globalThis.Rutas.agregarLeccion(
           'Agrega a la tabla `clientes` una clienta llamada `Mariana Peña`, de la ciudad `Pereira`.',
           'Deja el `SELECT` del final: así ves cómo quedó la tabla.',
         ],
-        codigo: ['-- Agrega aquí a la clienta nueva', '', '', 'SELECT * FROM clientes;'].join('\n'),
+        codigo: [
+          '-- TODO: agrega con INSERT INTO a la clienta Mariana Peña, de Pereira',
+          '--       (columnas nombre y ciudad; el id lo pone la base)',
+          '',
+          '',
+          'SELECT * FROM clientes;',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'Ahora hay 7 clientes',
@@ -40,9 +48,9 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'Muestras la tabla con los 7 clientes', condicion: 'filas.length === 7' },
         ],
         pistas: [
-          'La forma es `INSERT INTO clientes (nombre, ciudad) VALUES (..., ...);`',
-          'Los dos valores son textos, van entre comillas simples.',
-          '`INSERT INTO clientes (nombre, ciudad) VALUES (\'Mariana Peña\', \'Pereira\');`',
+          'Copia la forma del ejemplo, pero con la tabla `clientes` y solo dos columnas.',
+          'Las columnas son `(nombre, ciudad)`. Los dos valores son textos y van entre comillas simples, en ese mismo orden.',
+          'Casi listo: `INSERT INTO clientes (nombre, ciudad) VALUES (\'Mariana Peña\', ...);`',
         ],
         solucion: [
           'INSERT INTO clientes (nombre, ciudad)',
@@ -58,7 +66,13 @@ globalThis.Rutas.agregarLeccion(
           'Un solo `INSERT` puede agregar varias filas: después de `VALUES` van varios paréntesis separados por comas.',
           'Agrega estos dos productos con **una sola** instrucción `INSERT`: `Almojábana` (Comidas, 2500 pesos, 30 unidades) y `Avena` (Bebidas, 3000 pesos, 20 unidades).',
         ],
-        codigo: ['-- Agrega aquí los dos productos', '', '', 'SELECT * FROM productos;'].join('\n'),
+        codigo: [
+          '-- TODO: un solo INSERT INTO productos con las 4 columnas',
+          '--       y, después de VALUES, un paréntesis por producto separados por coma',
+          '',
+          '',
+          'SELECT * FROM productos;',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'Ahora hay 12 productos',

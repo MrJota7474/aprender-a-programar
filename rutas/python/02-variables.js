@@ -8,10 +8,13 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Cajas con nombre',
         texto: [
-          'Una **variable** es una caja con nombre donde guardas un valor para usarlo después.',
-          'En Python se crea escribiendo el nombre, un `=` y el valor. No hace falta ninguna palabra especial.',
-          'Los textos van entre comillas; los números, sin comillas.',
-          'Cuando un nombre tiene varias palabras, en Python se separan con guion bajo: `comida_favorita`.',
+          'Mira la primera línea del editor: `ciudad = "Medellín"`. Ahí guardamos el texto `Medellín` con el nombre `ciudad`. Después, `print(ciudad)` muestra `Medellín`.',
+          'Eso es una **variable**: una caja con nombre donde guardas un **valor** (un dato) para usarlo después.',
+          'Se crea así: el nombre, un `=` y el valor. El `=` no significa "es igual": significa "guarda este valor en esta caja".',
+          'Los textos van entre comillas. Los números van sin comillas.',
+          'Si un nombre tiene varias palabras, se separan con guion bajo: `comida_favorita`. Los nombres no llevan espacios ni tildes.',
+          '**Ejemplo explicado línea por línea:** `ciudad = "Medellín"` guarda el texto. `print(ciudad)` muestra lo que hay en la caja. `ciudad = "Cali"` cambia el contenido: lo viejo se borra. El segundo `print(ciudad)` ya muestra `Cali`.',
+          '**Error común:** poner comillas al mostrar la variable. `print("ciudad")` muestra la palabra `ciudad`, no lo que hay dentro. Para ver el contenido escribe el nombre sin comillas: `print(ciudad)`. Y si usas una variable antes de crearla, verás `NameError: name \'ciudad\' is not defined`.',
         ],
         codigo: [
           'ciudad = "Medellín"',
@@ -33,7 +36,14 @@ globalThis.Rutas.agregarLeccion(
           'Crea una variable `nombre` con tu nombre (un texto) y una variable `edad` con tu edad (un número).',
           'Después muestra las dos en la consola.',
         ],
-        codigo: '# Crea aquí tus variables\n',
+        codigo: [
+          '# TODO: crea la variable nombre con tu nombre (entre comillas)',
+          '',
+          '# TODO: crea la variable edad con tu edad (sin comillas)',
+          '',
+          '# TODO: muestra las dos variables con print()',
+          '',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'Existe la variable nombre y es un texto',
@@ -58,11 +68,11 @@ globalThis.Rutas.agregarLeccion(
           'Cambia el valor de `precio` a `2000` y muéstralo otra vez.',
           'Además crea una variable `moneda` con el texto `"COP"`.',
         ],
-        codigo: ['precio = 1500', 'print(precio)', '', '# Cambia el precio a 2000 y muéstralo de nuevo', ''].join('\n'),
+        codigo: ['precio = 1500', 'print(precio)', '', '# TODO: cambia el precio a 2000', '', '# TODO: muestra el precio otra vez', '', '# TODO: crea la variable moneda con el texto "COP"', ''].join('\n'),
         pruebas: [
           { descripcion: 'El precio termina valiendo 2000', condicion: 'precio == 2000' },
           {
-            descripcion: 'Muestras primero 1500 y después 2000',
+            descripcion: 'La consola muestra primero el precio viejo (1500) y después el nuevo (2000)',
             condicion: 'len(salida) >= 2 and salida[0] == "1500" and "2000" in salida',
           },
           { descripcion: 'Existe la variable moneda con el valor "COP"', condicion: 'moneda == "COP"' },

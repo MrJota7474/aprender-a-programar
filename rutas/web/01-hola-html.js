@@ -65,6 +65,11 @@ globalThis.Rutas.agregarLeccion(
           'Toda página web está escrita en **HTML**. No es un lenguaje para dar órdenes, como Python: sirve para **marcar** qué es cada pedazo de texto. Esto es un título, esto es un párrafo.',
           'Las marcas se llaman **etiquetas** y van entre `<` y `>`. Casi todas vienen en pareja: una abre (`<h1>`) y otra cierra, con una barra (`</h1>`). Lo que queda en medio es el contenido.',
           '`<h1>` es el título principal de la página y `<p>` es un párrafo.',
+          'Un **elemento** es el conjunto completo: etiqueta que abre, contenido y etiqueta que cierra. `<p>Hola</p>` es un elemento párrafo.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 1: `<h1>` abre el título, "Tienda Don Pepe" es su contenido y `</h1>` lo cierra. El navegador lo muestra grande y en negrita.',
+          'Líneas 2 y 3: dos párrafos. Cada uno sale en su propio renglón, con un espacio entre ellos.',
+          '**Error común:** olvidar la barra al cerrar. Si escribes `<h1>Hola<h1>`, la segunda etiqueta abre otro título en vez de cerrar el primero. Aquí verás: `La etiqueta <h1> no se cerró. Parece que a la etiqueta de cierre le faltó la barra: se escribe </h1>.`',
           'Presiona **Ejecutar** para ver la página en la vista previa. Luego cambia los textos y ejecútala otra vez.',
         ],
         codigo: [
@@ -80,7 +85,13 @@ globalThis.Rutas.agregarLeccion(
           'Ahora tú. Escribe un título `<h1>` que diga `Tienda Don Pepe` y, debajo, un párrafo `<p>` que cuente dónde queda la tienda (inventa la dirección).',
           'Ojo con cerrar cada etiqueta: la de cierre lleva una barra, `</h1>` y `</p>`. Si se te olvida, el error te dice cuál faltó.',
         ],
-        codigo: '<!-- Escribe tu página debajo de esta línea -->\n',
+        codigo: [
+          '<!-- Esto es un comentario de HTML: el navegador no lo muestra. -->',
+          '<!-- TODO 1: escribe un título h1 que diga Tienda Don Pepe. -->',
+          '',
+          '<!-- TODO 2: debajo, un párrafo p con la dirección de la tienda. -->',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Hay un solo título h1', condicion: 'cuenta("h1") === 1' },
           {
@@ -115,6 +126,8 @@ globalThis.Rutas.agregarLeccion(
           '    <title></title>',
           '  </head>',
           '  <body>',
+          '    <!-- TODO: aquí van un h1 con el nombre de la tienda y dos párrafos -->',
+          '    <!-- (uno con el horario y otro con lo que venden). -->',
           '',
           '  </body>',
           '</html>',

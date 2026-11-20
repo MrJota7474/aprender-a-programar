@@ -8,9 +8,12 @@ globalThis.Rutas.agregarLeccion(
         id: 'idea',
         titulo: 'Un resumen por cada grupo',
         texto: [
-          'Con `GROUP BY` SQL arma grupos con las filas que tienen el mismo valor en una columna, y calcula el resumen **de cada grupo**.',
-          'Así, "cuántos productos hay por categoría" es: agrupar por `categoria` y contar.',
-          'Para filtrar grupos según su resumen se usa `HAVING`. La diferencia: `WHERE` filtra filas antes de agrupar; `HAVING` filtra grupos después.',
+          '`COUNT(*)` te dice que hay 10 productos. Pero ¿cuántos hay **de cada categoría**? Ejecuta el código: la primera tabla da una fila por categoría, con su cantidad.',
+          'Con `GROUP BY` ("agrupar por") SQL junta en un **grupo** las filas que tienen el mismo valor en una columna, y calcula el resumen **de cada grupo**.',
+          '**Ejemplo explicado línea por línea:** `GROUP BY categoria` pone todas las bebidas en un montón, todas las comidas en otro, y así. `SELECT categoria, COUNT(*)` muestra, por cada montón, su nombre y cuántas filas tiene.',
+          'Para filtrar grupos según su resumen se usa `HAVING` ("que tenga"). La diferencia: `WHERE` filtra **filas** antes de agrupar; `HAVING` filtra **grupos** después. La segunda consulta deja solo las categorías cuyo precio promedio pasa de 3000.',
+          'El orden de las partes es: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`.',
+          '**Error común:** usar `WHERE` para filtrar por un resumen, como `WHERE COUNT(*) > 2`. SQL responde `misuse of aggregate: COUNT()` (uso indebido de una función de resumen). Las condiciones con `COUNT`, `SUM` o `AVG` van en `HAVING`.',
         ],
         codigo: [
           'SELECT categoria, COUNT(*) AS cuantos',
@@ -30,7 +33,11 @@ globalThis.Rutas.agregarLeccion(
           'Muestra cuántos clientes hay en cada ciudad.',
           'Las columnas deben ser `ciudad` y `cuantos`.',
         ],
-        codigo: '-- Cuántos clientes hay en cada ciudad\n',
+        codigo: [
+          '-- TODO: en el SELECT, la ciudad y COUNT(*) con el alias cuantos',
+          '-- TODO: agrupa las filas de clientes por ciudad con GROUP BY',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Las columnas son ciudad y cuantos', condicion: 'columnas.join() === "ciudad,cuantos"' },
           {
@@ -40,9 +47,9 @@ globalThis.Rutas.agregarLeccion(
           { descripcion: 'Usas GROUP BY', condicion: '/\\bGROUP\\s+BY\\b/.test(codigo)' },
         ],
         pistas: [
-          'En el `SELECT` van la columna del grupo y el conteo: `ciudad, COUNT(*) AS cuantos`',
-          'Al final se agrupa por la misma columna: `GROUP BY ciudad`',
-          '`SELECT ciudad, COUNT(*) AS cuantos FROM clientes GROUP BY ciudad;`',
+          'Es la primera consulta del ejemplo, pero con la tabla `clientes` y la columna `ciudad`.',
+          'En el `SELECT` van la columna del grupo y el conteo: `ciudad, COUNT(*) AS cuantos`. Al final, `GROUP BY` con la misma columna.',
+          'Casi listo: `SELECT ciudad, COUNT(*) AS cuantos FROM clientes GROUP BY ...;`',
         ],
         solucion: ['SELECT ciudad, COUNT(*) AS cuantos', 'FROM clientes', 'GROUP BY ciudad;'].join('\n'),
       },
@@ -54,7 +61,13 @@ globalThis.Rutas.agregarLeccion(
           'Muestra solo los productos que suman **3 unidades o más**, del más pedido al menos pedido.',
           'Necesitas tres piezas, en este orden: `GROUP BY`, `HAVING` y `ORDER BY`.',
         ],
-        codigo: '-- Unidades pedidas por producto (solo los de 3 o más)\n',
+        codigo: [
+          '-- TODO: de la tabla pedidos, muestra producto_id y SUM(cantidad) AS unidades',
+          '-- TODO: agrupa por producto_id',
+          '-- TODO: con HAVING, deja los grupos que suman 3 o más',
+          '-- TODO: ordena por unidades de mayor a menor',
+          '',
+        ].join('\n'),
         pruebas: [
           {
             descripcion: 'Las columnas son producto_id y unidades',
@@ -71,9 +84,9 @@ globalThis.Rutas.agregarLeccion(
           },
         ],
         pistas: [
-          'Empieza con `SELECT producto_id, SUM(cantidad) AS unidades FROM pedidos GROUP BY producto_id`',
-          'El filtro de grupos va después: `HAVING SUM(cantidad) >= 3`',
-          'Y al final el orden: `ORDER BY unidades DESC`',
+          'Construye la consulta por partes y ejecútala en cada paso: primero solo el `GROUP BY`, luego agrega el `HAVING` y por último el orden.',
+          'Empieza con `SELECT producto_id, SUM(cantidad) AS unidades FROM pedidos GROUP BY producto_id`. El filtro de grupos usa `HAVING` con `>=`.',
+          'Las dos últimas líneas: `HAVING SUM(cantidad) >= 3` y `ORDER BY unidades DESC;`',
         ],
         solucion: [
           'SELECT producto_id, SUM(cantidad) AS unidades',

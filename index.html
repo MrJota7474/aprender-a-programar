@@ -6,6 +6,7 @@
     <meta name="color-scheme" content="light dark" />
     <title>Aprender a programar</title>
     <link rel="stylesheet" href="css/estilos.css" />
+    <link rel="stylesheet" href="css/glosario.css" />
   </head>
   <body>
     <header class="cabecera">
@@ -105,14 +106,31 @@
       </header>
 
       <div class="pagina">
+      <!-- El menú de lecciones. En pantallas muy anchas es una columna fija a
+           la izquierda; en las demás es un cajón que se abre con "Lecciones". -->
       <nav id="menu" class="menu" aria-label="Lecciones">
         <ol id="lista-lecciones" class="menu__lista"></ol>
         <button id="boton-borrar" class="boton boton--discreto">
           Borrar mi progreso en esta ruta
         </button>
       </nav>
+      <!-- Fondo oscuro detrás del cajón: tocarlo cierra el menú. -->
+      <div id="menu-fondo" class="menu-fondo" hidden></div>
 
-      <main class="contenido">
+      <!-- data-panel dice qué mitad se ve en pantallas angostas (lección o
+           código). En pantallas anchas se ven las dos, una al lado de la otra. -->
+      <main id="contenido" class="contenido" data-panel="leccion">
+        <div class="conmutador" aria-label="Qué quieres ver" role="group">
+          <button id="ver-leccion" class="conmutador__boton" aria-pressed="true">Lección</button>
+          <button id="ver-codigo" class="conmutador__boton" aria-pressed="false">Código</button>
+          <!-- Avance de la lección en miniatura: un segmento por paso. -->
+          <span class="conmutador__avance">
+            <span id="leccion-segmentos" class="segmentos" aria-hidden="true"></span>
+            <span id="leccion-cuenta"></span>
+          </span>
+        </div>
+
+        <div id="columna-leccion" class="columna columna--leccion">
         <ol id="pestanas" class="pestanas" aria-label="Pasos de la lección"></ol>
 
         <article class="explicacion">
@@ -121,14 +139,26 @@
           <div id="paso-texto"></div>
         </article>
 
-        <!-- Material de consulta del paso. Solo aparece si el motor de la ruta
-             tiene algo que mostrar (en SQL, las tablas de la base de datos). -->
-        <details id="referencia" class="referencia" open hidden>
-          <summary>Las tablas de esta base de datos</summary>
-          <div id="referencia-contenido" class="referencia__contenido"></div>
-        </details>
+        <!-- Solo se ve en pantallas angostas: lleva de la explicación al editor. -->
+        <button id="ir-al-codigo" class="boton boton--principal ir-al-codigo">
+          Ir al código →
+        </button>
 
-        <section class="taller" aria-label="Editor de código">
+        <footer class="navegacion">
+          <button id="boton-anterior" class="boton">← Anterior</button>
+          <button id="boton-siguiente" class="boton">Siguiente →</button>
+        </footer>
+        </div>
+
+        <section id="columna-taller" class="columna columna--taller taller" aria-label="Editor de código">
+          <!-- Material de consulta del paso. Va arriba del editor (así lo
+               dicen las lecciones de SQL). Solo aparece si el motor de la ruta
+               tiene algo que mostrar (en SQL, las tablas de la base de datos). -->
+          <details id="referencia" class="referencia" open hidden>
+            <summary>Las tablas de esta base de datos</summary>
+            <div id="referencia-contenido" class="referencia__contenido"></div>
+          </details>
+
           <div class="editor">
             <div class="editor__barra">
               <span id="editor-archivo" class="editor__archivo"></span>
@@ -157,16 +187,26 @@
           </div>
 
           <div class="acciones">
-            <button id="boton-ejecutar" class="boton boton--principal">▶ Ejecutar</button>
+            <!-- El texto del botón cambia mientras corre ("Cargando Python…"),
+                 por eso va en su propio <span>; el atajo queda al lado. -->
+            <button id="boton-ejecutar" class="boton boton--principal boton--ejecutar">
+              <span id="ejecutar-texto">▶ Ejecutar</span>
+              <kbd class="atajo" aria-hidden="true">Ctrl+Enter</kbd>
+            </button>
             <button id="boton-pista" class="boton">Dame una pista</button>
             <button id="boton-reiniciar" class="boton boton--discreto">Reiniciar código</button>
           </div>
           <!-- No se ve: es para que los lectores de pantalla anuncien "Cargando Python…" -->
           <p id="estado-ejecucion" class="solo-lectores" role="status"></p>
-          <p id="ayuda-teclado" class="ayuda">
-            Atajos: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> ejecuta. <kbd>Tab</kbd> agrega espacios;
-            para salir del editor con el teclado presiona <kbd>Esc</kbd> y luego <kbd>Tab</kbd>.
-          </p>
+          <details class="ayuda">
+            <summary>Atajos del teclado</summary>
+            <ul id="ayuda-teclado" class="ayuda__lista">
+              <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> ejecuta tu código.</li>
+              <li><kbd>Tab</kbd> agrega espacios (sangría).</li>
+              <li>Para salir del editor con el teclado: <kbd>Esc</kbd> y luego <kbd>Tab</kbd>.</li>
+              <li>Al aprobar, <kbd>Enter</kbd> te lleva al siguiente paso.</li>
+            </ul>
+          </details>
 
           <div id="pistas" class="pistas" aria-live="polite"></div>
 
@@ -202,13 +242,11 @@
             </section>
           </div>
 
+          <!-- Qué hacer ahora cuando algo no pasó: cuál prueba revisar y una pista. -->
+          <div id="ayuda-resultado" class="ayuda-resultado" hidden></div>
+
           <div id="felicitacion" class="felicitacion" role="status" hidden></div>
         </section>
-
-        <footer class="navegacion">
-          <button id="boton-anterior" class="boton">← Anterior</button>
-          <button id="boton-siguiente" class="boton">Siguiente →</button>
-        </footer>
       </main>
       </div>
     </div>
@@ -216,6 +254,7 @@
     <!-- Scripts clásicos (sin módulos). El orden importa: cada archivo usa lo
          que definieron los anteriores.
          1. Herramientas y registros  2. Motores  3. Rutas y lecciones  4. Interfaz -->
+    <script src="js/glosario.js"></script>
     <script src="js/formato.js"></script>
     <script src="js/iconos.js"></script>
     <script src="js/resaltado.js"></script>

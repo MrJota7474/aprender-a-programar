@@ -15,6 +15,10 @@ globalThis.Rutas.agregarLeccion(
           'Cada elemento de la lista va en su propia etiqueta `<li>`, y los `<li>` van **dentro** de la `<ul>` o la `<ol>`. Recuerda cerrar cada `<li>` con `</li>`.',
           'Un **enlace** se hace con la etiqueta `<a>` (de "anchor", ancla). El atributo `href` dice a dónde lleva, y el texto que queda en medio es lo que el usuario ve y toca: `<a href="contacto.html">Escríbenos</a>`.',
           'Un **atributo** es un dato extra que va dentro de la etiqueta de apertura, con la forma `nombre="valor"`. Ejecuta y mira cómo cambia la lista cuando agregas otro `<li>`.',
+          '**Ejemplo explicado línea por línea:**',
+          'Línea 3: `<ul>` abre la lista. Líneas 4 a 6: un `<li>` por producto; cada uno sale con su viñeta. Línea 7: `</ul>` cierra la lista.',
+          'Línea 8: dentro del párrafo, solo la palabra "escríbenos" es enlace. El resto del párrafo es texto normal.',
+          '**Error común:** olvidar cerrar el enlace. Con `<a href="contacto.html">escríbenos` sin `</a>`, todo lo que sigue se volvería enlace. Aquí verás `Cerraste </p>, pero adentro todavía está abierta <a>`. Revisa que cada `<a>` tenga su `</a>` antes de cerrar el párrafo.',
         ],
         codigo: [
           '<h1>Tienda Don Pepe</h1>',
@@ -34,7 +38,13 @@ globalThis.Rutas.agregarLeccion(
           'Doña Marta le pidió a Don Pepe su lista de productos. Escribe una lista con viñetas (`<ul>`) con **tres** productos de la tienda, cada uno en su `<li>`.',
           'Los `<li>` van dentro de la `<ul>`, nunca sueltos.',
         ],
-        codigo: '<h1>Productos de la tienda</h1>\n<!-- Escribe tu lista debajo de esta línea -->\n',
+        codigo: [
+          '<h1>Productos de la tienda</h1>',
+          '<!-- TODO 1: abre una lista con viñetas (ul). -->',
+          '<!-- TODO 2: adentro, tres productos, cada uno en su li. -->',
+          '<!-- TODO 3: cierra la lista. -->',
+          '',
+        ].join('\n'),
         pruebas: [
           { descripcion: 'Hay una lista con viñetas (ul)', condicion: 'cuenta("ul") === 1' },
           { descripcion: 'La lista tiene tres elementos li', condicion: 'cuenta("ul > li") === 3' },
@@ -64,6 +74,7 @@ globalThis.Rutas.agregarLeccion(
           'Don Pepe quiere poner en su página cómo se prepara el tinto y un enlace para contactarlo. Ya está la lista de productos; no la cambies.',
           'Agrega una lista **numerada** (`<ol>`) con tres pasos para preparar el tinto, cada paso en un `<li>`.',
           'Y dentro del párrafo que ya está, convierte la palabra "escríbenos" en un enlace que lleve a `contacto.html`.',
+          '(El `<h2>` que ya está es un **subtítulo**: un título de segundo nivel, más pequeño que el `<h1>`.)',
         ],
         codigo: [
           '<h1>Tienda Don Pepe</h1>',
@@ -73,8 +84,9 @@ globalThis.Rutas.agregarLeccion(
           '  <li>Tinto</li>',
           '</ul>',
           '<h2>Cómo preparamos el tinto</h2>',
-          '<!-- Escribe aquí la lista numerada de tres pasos -->',
+          '<!-- TODO 1: lista numerada (ol) con tres pasos, cada uno en su li. -->',
           '',
+          '<!-- TODO 2: convierte "escríbenos" en un enlace a contacto.html. -->',
           '<p>Para pedidos, escríbenos.</p>',
         ].join('\n'),
         pruebas: [

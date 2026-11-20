@@ -38,6 +38,12 @@
 
   --radio: 6px;
   --radio-chico: 4px;
+
+  /* Alto fijo de la cabecera: la usan los elementos que se pegan debajo de
+     ella y el diseño a dos columnas, que llena justo el resto de la pantalla. */
+  --alto-cabecera: 3.6rem;
+  /* Lo mínimo que mide un botón para tocarlo cómodo con el dedo (44 px). */
+  --toque: 2.75rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -273,8 +279,8 @@ kbd {
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  min-height: 3.6rem;
-  padding: calc(0.5rem + 4px) 1.25rem 0.5rem;
+  height: var(--alto-cabecera);
+  padding: 4px 1.25rem 0;
   /* Franja de 4px con los colores de la bandera: el único adorno de marca */
   background:
     linear-gradient(90deg, #fcd116 50%, #003893 50% 75%, #ce1126 75%) top / 100% 4px no-repeat,
@@ -283,8 +289,9 @@ kbd {
 }
 
 .cabecera__menu {
-  display: none;
   flex: none;
+  padding-inline: 0.75rem;
+  white-space: nowrap;
 }
 
 /* Migas de pan en una sola línea: si no caben, se recortan con "…". */
@@ -986,18 +993,41 @@ kbd {
   height: 3.25rem;
 }
 
+/* Pantallas angostas y medianas (menos de 1100 px): una sola columna. La
+   lección y el código se turnan con los botones del conmutador, así no hay
+   que bajar por todo para llegar al editor. */
 .pagina {
-  display: grid;
-  grid-template-columns: 18rem minmax(0, 1fr);
-  align-items: start;
+  display: block;
 }
 
+/* El menú de lecciones es un cajón que sale de la izquierda por encima de
+   la lección. visibility: hidden (y no solo moverlo fuera) evita que el Tab
+   entre a botones que no se ven. */
 .menu {
-  position: sticky;
-  top: 3.6rem;
-  max-height: calc(100vh - 3.6rem);
+  position: fixed;
+  top: var(--alto-cabecera);
+  bottom: 0;
+  left: 0;
+  z-index: 4;
+  width: min(21rem, 88vw);
   overflow-y: auto;
   padding: 1.25rem 1rem;
+  border-right: 1px solid var(--borde);
+  background: var(--superficie);
+  visibility: hidden;
+  transform: translateX(-100%);
+}
+
+.menu--abierto {
+  visibility: visible;
+  transform: none;
+}
+
+.menu-fondo {
+  position: fixed;
+  inset: var(--alto-cabecera) 0 0;
+  z-index: 3;
+  background: rgb(0 0 0 / 0.4);
 }
 
 /* El menú es un camino: cada lección es un nodo de 1.5rem y una línea vertical
@@ -1041,6 +1071,7 @@ kbd {
   align-items: flex-start;
   gap: 0.7rem;
   width: 100%;
+  min-height: var(--toque);
   padding: 0.5rem 0.7rem;
   border: 0;
   border-radius: var(--radio-chico);
@@ -1140,9 +1171,88 @@ kbd {
 }
 
 .contenido {
-  max-width: 56rem;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+
+/* Conmutador Lección | Código: se queda pegado bajo la cabecera, con el
+   avance de la lección a la derecha. */
+.conmutador {
+  position: sticky;
+  top: var(--alto-cabecera);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 -1rem 1.25rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--borde);
+  background: var(--fondo);
+}
+
+.conmutador__boton {
+  min-height: var(--toque);
+  padding: 0 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--tinta);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.conmutador__boton[aria-pressed='true'] {
+  border-color: var(--ruta-fuerte);
+  background: var(--ruta-fuerte);
+  color: var(--fondo);
+}
+
+.conmutador__avance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta-suave);
+  white-space: nowrap;
+}
+
+/* Un segmento por paso de la lección. */
+.segmentos {
+  display: flex;
+  gap: 3px;
+}
+
+.segmento {
+  width: 1.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tinta-suave) 30%, transparent);
+}
+
+.segmento--hecho {
+  background: var(--exito);
+}
+
+.segmento--actual {
+  outline: 2px solid var(--ruta-fuerte);
+  outline-offset: 1px;
+}
+
+/* En pantalla angosta solo se ve la mitad elegida. */
+.contenido[data-panel='leccion'] .columna--taller,
+.contenido[data-panel='codigo'] .columna--leccion {
+  display: none;
+}
+
+.ir-al-codigo {
+  display: block;
   width: 100%;
-  padding: 1.75rem 1.75rem 4rem;
+  margin-top: 1.5rem;
 }
 
 /* ---------- Curso: pasos y explicación ---------- */
@@ -1261,8 +1371,17 @@ kbd {
   line-height: 1.65;
 }
 
+/* pre-line respeta los \n de un texto (retos con pasos 1., 2., 3.) y sigue
+   juntando los espacios repetidos como siempre. */
 #paso-texto p {
   margin: 0 0 1em;
+  white-space: pre-line;
+}
+
+/* Textos seguidos que empiezan por "- " (ver crearBloquesDeTexto en app.js). */
+#paso-texto ul {
+  margin: 0 0 1em;
+  padding-left: 1.25em;
 }
 
 /* Puentes entre lecciones: recuadros cortos que conectan cada lección con
@@ -1285,6 +1404,56 @@ kbd {
   background: var(--exito-fondo);
 }
 
+/* "Viene de / Para qué sirve" plegado: una línea discreta que se abre al tocarla. */
+.puente-plegable {
+  margin: 0 0 1.25rem;
+  font-family: var(--interfaz);
+  font-size: 0.95rem;
+}
+
+.puente-plegable > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--toque);
+  padding: 0 0.9rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--tinta-suave);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.puente-plegable > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Flecha que gira al abrir: dice "esto se despliega" sin palabras. */
+.puente-plegable > summary::before {
+  content: '▸';
+  color: var(--acento);
+}
+
+.puente-plegable[open] > summary::before {
+  content: '▾';
+}
+
+.puente-plegable[open] > summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.puente-plegable > .puente {
+  margin: 0;
+  border-top-left-radius: 0;
+}
+
+.puente--ruta {
+  border-left-color: var(--ruta-fuerte);
+}
+
 #paso-texto .puente__fila {
   margin: 0;
 }
@@ -1305,7 +1474,7 @@ kbd {
 /* ---------- Editor ---------- */
 
 .editor {
-  margin-top: 1.5rem;
+  margin-top: 0;
   border-radius: var(--radio);
   background: var(--editor-fondo);
   overflow: hidden;
@@ -1333,7 +1502,9 @@ kbd {
 
 .editor__cuerpo {
   display: flex;
-  height: 20rem;
+  /* En el celular el editor ocupa media pantalla: lo justo para ver el
+     código y, debajo, el botón Ejecutar sin tener que bajar. */
+  height: clamp(13rem, 48dvh, 26rem);
 }
 
 /* Números, capa de colores y cuadro de texto comparten letra, tamaño,
@@ -1445,6 +1616,11 @@ kbd {
 }
 
 .boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: var(--toque);
   padding: 0.5rem 1.05rem;
   border: 1px solid var(--borde);
   border-radius: var(--radio);
@@ -1495,9 +1671,77 @@ a.boton {
 }
 
 .ayuda {
-  margin: 0.7rem 0 0;
-  font-size: 0.84rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.86rem;
   color: var(--tinta-suave);
+}
+
+.ayuda > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: var(--toque);
+  cursor: pointer;
+}
+
+.ayuda > summary::before {
+  content: '▸';
+  color: var(--acento);
+}
+
+.ayuda[open] > summary::before {
+  content: '▾';
+}
+
+.ayuda__lista {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.9;
+}
+
+/* El atajo va dentro del botón Ejecutar, en letra pequeña. En pantallas
+   táctiles no hay teclado: ahí sobra y se oculta. */
+.atajo {
+  padding: 0.05em 0.4em;
+  border-color: color-mix(in srgb, var(--acento-tinta) 40%, transparent);
+  background: color-mix(in srgb, var(--acento-tinta) 15%, transparent);
+  color: inherit;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+@media (hover: none) {
+  .atajo {
+    display: none;
+  }
+}
+
+/* Mientras corre el código: un circulito que gira junto al texto
+   ("Cargando Python…"). Sin animación si se pidió reducir el movimiento. */
+.boton--cargando::before {
+  content: '';
+  flex: none;
+  width: 0.95em;
+  height: 0.95em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+}
+
+.boton--cargando[aria-disabled='true'] {
+  opacity: 0.8;
+  cursor: progress;
+}
+
+.boton--grande {
+  min-height: 3.1rem;
+  padding-inline: 1.6rem;
+  font-size: 1.08rem;
+}
+
+.boton--pista {
+  border-color: var(--pista-borde);
+  background: var(--pista-fondo);
 }
 
 /* ---------- Pistas ---------- */
@@ -1530,42 +1774,20 @@ a.boton {
 
 /* ---------- Resultados: vista previa, consola y pruebas ---------- */
 
-/* Una sección con borde arriba y columnas separadas por una línea vertical.
-   Sin vista previa: Consola | Pruebas. Con vista previa (rutas de páginas
-   web): la vista ocupa la columna izquierda y Consola y Pruebas se apilan a
-   la derecha. */
+/* Vista previa, consola y pruebas van una debajo de la otra: en el diseño
+   a dos columnas el taller mide unos 550 px, y partirlo otra vez dejaría
+   la consola demasiado angosta. Cada sección lleva una línea arriba. */
 .resultados {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-areas: 'consola pruebas';
-  margin-top: 1.5rem;
-  border-top: 1px solid var(--borde);
-}
-
-.resultados--con-vista {
-  grid-template-areas:
-    'vista consola'
-    'vista pruebas';
-}
-
-/* Un paso sin pruebas (una "idea"): la consola ocupa todo el ancho. */
-.resultados:not(.resultados--con-vista):has(#zona-pruebas[hidden]) {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'consola';
+  margin-top: 1.25rem;
 }
 
 .panel {
   min-width: 0;
-  padding: 0.9rem 1.1rem 1rem;
+  padding: 0.9rem 0 1rem;
+  border-top: 1px solid var(--borde);
 }
-
-.panel--vista { grid-area: vista; padding-left: 0; }
-.panel--consola { grid-area: consola; padding-left: 0; }
-#zona-pruebas { grid-area: pruebas; border-left: 1px solid var(--borde); }
-
-/* Con vista previa, la línea vertical separa la vista del resto. */
-.resultados--con-vista .panel--consola { border-left: 1px solid var(--borde); padding-left: 1.1rem; }
-.resultados--con-vista #zona-pruebas { border-top: 1px solid var(--borde); }
 
 .panel__resumen {
   font-variant-numeric: tabular-nums;
@@ -1622,8 +1844,12 @@ a.boton {
 
 /* ---------- Tablas de datos (resultados de SQL) ---------- */
 
+/* minmax(0, 1fr): sin esto la columna crece al ancho de la tabla más ancha
+   y empuja la página hacia los lados en el celular. La tabla se desliza
+   dentro de su marco. */
 .tablas {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 
@@ -1680,7 +1906,7 @@ a.boton {
 /* ---------- Material de consulta (las tablas de la base) ---------- */
 
 .referencia {
-  margin-top: 1.25rem;
+  margin: 0 0 1rem;
   border: 1px solid var(--borde);
   border-radius: var(--radio);
   background: var(--superficie);
@@ -1692,7 +1918,11 @@ a.boton {
   cursor: pointer;
 }
 
+/* Altura limitada: las tablas de consulta no deben empujar el editor
+   fuera de la pantalla. Se desplazan por dentro. */
 .referencia__contenido {
+  max-height: 18rem;
+  overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: 1rem;
@@ -1795,6 +2025,73 @@ a.boton {
   background: var(--ruta-fuerte);
 }
 
+.felicitacion__accion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+}
+
+.felicitacion__atajo {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--tinta-suave);
+}
+
+/* Qué hacer cuando algo no pasó: nota con borde amarillo, como las pistas. */
+.ayuda-resultado {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--pista-borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.ayuda-resultado p {
+  margin: 0 0 0.6rem;
+}
+
+.ayuda-resultado__titulo {
+  font-weight: 700;
+}
+
+/* La primera prueba que falta se resalta: por ahí conviene empezar. */
+.prueba--primera {
+  margin-inline: -0.5rem;
+  padding-inline: 0.5rem;
+  border-radius: var(--radio-chico);
+  background: var(--peligro-fondo);
+}
+
+/* Confirmación antes de ver la solución. */
+.confirmar {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--pista-borde);
+  border-radius: var(--radio-chico);
+  background: var(--superficie);
+}
+
+.confirmar p {
+  margin: 0 0 0.6rem;
+}
+
+.confirmar__titulo {
+  font-weight: 700;
+}
+
+.confirmar__botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Mientras se carga el motor, la consola lo dice en cursiva. */
+.consola--cargando {
+  font-style: italic;
+}
+
 /* Lluvia de confeti: app.js la crea solo si no se pidió reducir el movimiento. */
 .confeti {
   position: fixed;
@@ -1825,19 +2122,9 @@ a.boton {
 }
 
 @media (max-width: 800px) {
-  .pagina {
-    display: block;
-  }
-
   .cabecera {
     gap: 0.6rem;
     padding-inline: 0.9rem;
-  }
-
-  .cabecera__menu {
-    display: block;
-    padding-inline: 0.75rem;
-    white-space: nowrap;
   }
 
   .avance {
@@ -1847,21 +2134,6 @@ a.boton {
 
   .avance .barra {
     width: 2.5rem;
-  }
-
-  .menu {
-    display: none;
-    position: static;
-    max-height: none;
-    border-bottom: 1px solid var(--borde);
-  }
-
-  .menu--abierto {
-    display: block;
-  }
-
-  .contenido {
-    padding: 1.1rem 1rem 3rem;
   }
 
   .inicio {
@@ -1890,40 +2162,154 @@ a.boton {
     flex: 1 1 100%;
     text-align: center;
   }
+}
+
+/* En el celular el encabezado de la ruta se achica: el espacio es para la lección. */
+@media (max-width: 640px) {
+  .curso-cabecera {
+    gap: 0.7rem;
+    padding-block: 0.55rem;
+  }
+
+  .curso-cabecera .icono-ruta {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .curso-cabecera__ruta {
+    font-size: 1.05rem;
+  }
+
+  .curso-cabecera__posicion {
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .curso-cabecera .anillo {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+
+  .acciones .boton {
+    flex: 1 1 auto;
+  }
+
+  .navegacion .boton {
+    flex: 1 1 0;
+  }
+}
+
+/* ---------- Pantallas anchas: lección y código lado a lado ---------- */
+
+/* Desde 1100 px la vista del curso llena justo la pantalla bajo la
+   cabecera, y cada columna se desplaza por su cuenta: se puede leer la
+   explicación sin perder de vista el editor (como en freeCodeCamp).
+   Debe coincidir con PANTALLA_PARTIDA de js/app.js. */
+@media (min-width: 1100px) {
+  #vista-curso {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - var(--alto-cabecera));
+  }
+
+  .pagina {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .contenido {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+    max-width: none;
+    height: 100%;
+    padding: 0;
+  }
+
+  .conmutador,
+  .ir-al-codigo {
+    display: none;
+  }
+
+  /* El encabezado de la ruta se achica: cada fila de pantalla es para las columnas. */
+  .curso-cabecera {
+    padding-block: 0.5rem;
+  }
+
+  .curso-cabecera .anillo {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  /* Las dos mitades se ven siempre, diga lo que diga data-panel. */
+  /* position: relative contiene los textos .solo-lectores (que son
+     absolutos): sin esto se ubican respecto a la página y la alargan. */
+  .contenido[data-panel] .columna {
+    position: relative;
+    display: block;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .columna--leccion {
+    padding: 0 2.25rem 3rem;
+  }
+
+  .columna--taller {
+    padding: 1.25rem 1.75rem 3rem;
+    border-left: 1px solid var(--borde);
+    background: var(--superficie);
+  }
+
+  /* Los pasos de la lección se quedan arriba de su columna al bajar:
+     son el avance de la lección, siempre a la vista. */
+  .pestanas {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    max-width: none;
+    margin: 0 -2.25rem 1.25rem;
+    padding: 1rem 2.25rem 0.75rem;
+    border-bottom: 1px solid var(--borde);
+    background: var(--fondo);
+  }
+
+  .pestanas > .etapa {
+    max-width: 11rem;
+  }
 
   .editor__cuerpo {
-    height: 16rem;
+    height: clamp(14rem, 42dvh, 30rem);
+  }
+}
+
+/* Desde 1500 px también cabe el menú como columna fija a la izquierda. */
+@media (min-width: 1500px) {
+  /* Una sola fila del alto disponible: así el menú y las columnas se
+     desplazan cada uno por dentro, y la página no crece. */
+  .pagina {
+    display: grid;
+    grid-template-columns: 18rem minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
   }
 
-  /* Resultados: una sección debajo de la otra. */
-  .resultados,
-  .resultados--con-vista,
-  .resultados:not(.resultados--con-vista):has(#zona-pruebas[hidden]) {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      'vista'
-      'consola'
-      'pruebas';
+  .menu {
+    position: relative;
+    top: auto;
+    z-index: auto;
+    width: auto;
+    min-height: 0;
+    border-right: 1px solid var(--borde);
+    background: none;
+    visibility: visible;
+    transform: none;
   }
 
-  .panel,
-  .resultados--con-vista .panel--consola {
-    padding-inline: 0;
-  }
-
-  #zona-pruebas,
-  .resultados--con-vista .panel--consola,
-  .resultados--con-vista #zona-pruebas {
-    border-left: 0;
-  }
-
-  .panel--consola,
-  #zona-pruebas {
-    border-top: 1px solid var(--borde);
-  }
-
-  .panel--vista {
-    padding-bottom: 1.2rem;
+  .menu-fondo,
+  .cabecera__menu {
+    display: none !important;
   }
 }
 
@@ -1939,6 +2325,39 @@ a.boton {
 
   .barra__relleno {
     transition: width 0.4s ease;
+  }
+
+  /* El cajón del menú entra deslizándose; visibility espera a que termine
+     de salir para ocultarlo. */
+  .menu {
+    transition: transform 0.22s ease, visibility 0.22s;
+  }
+
+  .menu-fondo {
+    animation: aparecer-suave 0.22s ease-out;
+  }
+
+  /* Al cambiar de paso o de mitad, el contenido aparece suave. */
+  .aparecer {
+    animation: aparecer-suave 0.25s ease-out;
+  }
+
+  .boton--cargando::before {
+    animation: girar 0.8s linear infinite;
+  }
+
+  .ayuda-resultado:not([hidden]),
+  .confirmar {
+    animation: aparecer-suave 0.25s ease-out;
+  }
+
+  @keyframes aparecer-suave {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes girar {
+    to { transform: rotate(360deg); }
   }
 
   .anillo__relleno {
