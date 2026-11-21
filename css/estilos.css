@@ -1471,6 +1471,146 @@ kbd {
   color: var(--tinta-suave);
 }
 
+/* ---------- Videos de YouTube (rutas/videos.js) ----------
+   Reusa el plegable de los puentes. El triángulo de "play" reemplaza la
+   flecha y gira al abrir, para que se lea como "videos" de un vistazo. */
+.videos-plegable > summary::before,
+.videos-plegable[open] > summary::before {
+  content: '▶';
+  font-size: 0.75em;
+  transition: transform 0.15s ease;
+}
+
+.videos-plegable[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+/* #paso-texto ul trae viñetas y sangría para las listas de la lección;
+   esta lista de tarjetas no las quiere. */
+.videos,
+#paso-texto .videos {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#paso-texto .videos-plegable > .videos {
+  padding: 0.75rem;
+  border: 1px solid var(--borde);
+  border-top: 0;
+  border-radius: 0 0 var(--radio) var(--radio);
+  background: var(--superficie-suave);
+}
+
+/* Miniatura a la izquierda en pantallas anchas; a 375 px va arriba y
+   ocupa todo el ancho, porque al lado del texto quedaría diminuta. */
+.video {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  font-family: var(--interfaz);
+}
+
+@media (min-width: 40rem) {
+  .video:has(.video__miniatura) {
+    grid-template-columns: 10rem 1fr;
+    align-items: start;
+  }
+}
+
+.video__miniatura {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radio-chico);
+  background: var(--superficie-suave);
+}
+
+/* Los márgenes van en 0 con #paso-texto para ganarle a los párrafos de
+   la lección, que traen su propio espacio. */
+.video__titulo,
+#paso-texto .video__titulo {
+  margin: 0;
+  white-space: normal;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--tinta);
+}
+
+.video__canal,
+#paso-texto .video__canal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+}
+
+.video__idioma {
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.video__nota,
+#paso-texto .video__nota {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+/* Botón de 44 px de alto como mínimo: se toca fácil con el dedo. */
+.video__enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--toque);
+  margin-top: 0.5rem;
+  padding: 0 1rem;
+  border-radius: var(--radio);
+  background: var(--acento);
+  color: var(--acento-tinta);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.video__enlace:hover {
+  filter: brightness(1.1);
+}
+
+.video__enlace:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* En el cajón de lecciones: separado de la lista por una línea. */
+.menu-videos {
+  margin: 0 0 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--borde);
+}
+
+.menu-videos__titulo {
+  margin: 0 0 0.75rem;
+  font-family: var(--interfaz);
+  font-size: 0.95rem;
+  color: var(--tinta-suave);
+}
+
+.menu-videos .video {
+  padding: 0.6rem;
+}
+
 /* ---------- Editor ---------- */
 
 .editor {

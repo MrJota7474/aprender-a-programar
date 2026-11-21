@@ -107,6 +107,10 @@ pistas y progreso guardado.
   - [x] Python, SQL, JavaScript y web reescritas para principiantes: ejemplo antes de la regla,
     "Error común" con el mensaje real, código inicial con TODO, pistas de menos a más y trampas cerradas.
   - [x] Listas y saltos de línea en el texto de las lecciones; arreglo de la vista previa en blanco.
+- [x] **Fase 12 — Videos de YouTube** (hecha el 20 de noviembre de 2026): 224 videos en `rutas/videos.js`,
+  cursos completos para las 16 rutas y videos cortos para 132 lecciones, sobre todo en español. Cada enlace
+  se verificó con el oEmbed de YouTube; el título y el canal salen de esa respuesta. Se muestran como enlaces
+  (sin incrustar) en un plegable "Videos para reforzar" y en el cajón de lecciones.
 
 ## Decisiones tomadas
 

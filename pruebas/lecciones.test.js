@@ -166,10 +166,11 @@ test('index.html carga el catálogo y todos los archivos de lecciones', () => {
   const cargados = [...html.matchAll(/src="rutas\/([^"]+)"/g)].map((m) => m[1]);
 
   assert.equal(cargados[0], 'catalogo.js');
-  // puentes.js no es una lección: va al final, después de todas ellas
-  // (lo revisa pruebas/puentes.test.js).
-  assert.equal(cargados[cargados.length - 1], 'puentes.js');
-  assert.deepEqual(cargados.slice(1, -1).sort(), [...archivos].sort());
+  // puentes.js y videos.js no son lecciones: van al final, después de todas
+  // ellas y en ese orden (los revisan pruebas/puentes.test.js y
+  // pruebas/videos.test.js).
+  assert.deepEqual(cargados.slice(-2), ['puentes.js', 'videos.js']);
+  assert.deepEqual(cargados.slice(1, -2).sort(), [...archivos].sort());
 });
 
 test('dentro de cada ruta, index.html carga las lecciones en orden', () => {

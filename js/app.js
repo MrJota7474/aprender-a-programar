@@ -59,6 +59,7 @@
     vistaCurso: porId('vista-curso'),
     menu: porId('menu'),
     listaLecciones: porId('lista-lecciones'),
+    menuVideos: porId('menu-videos'),
     pestanas: porId('pestanas'),
     ubicacion: porId('paso-ubicacion'),
     titulo: porId('paso-titulo'),
@@ -802,6 +803,120 @@
       return crear('li', { hijos: [boton] });
     });
     nodos.listaLecciones.replaceChildren(...elementos);
+    pintarVideosDelMenu();
+  }
+
+  // ---------- Videos de YouTube (rutas/videos.js) ----------
+  // Un complemento para ver una explicación además de practicar. Son
+  // enlaces, no videos incrustados: pesan casi nada, no cargan rastreadores
+  // y en el celular abren la app de YouTube.
+
+  // Las funciones de videos.js, o unas vacías si el archivo no cargó: así
+  // la lección se ve igual, solo que sin videos.
+  function fuenteDeVideos() {
+    return globalThis.Videos || {
+      videosDeLeccion: () => [],
+      videosDeRuta: () => [],
+      analizarUrlDeYouTube: () => null,
+    };
+  }
+
+  // Una tarjeta por video. La URL se vuelve a validar aquí (y no solo en
+  // las pruebas) porque nunca se crea un enlace sin revisar a dónde lleva.
+  // Devuelve null si la URL no es de YouTube: ese video no se muestra.
+  function crearTarjetaDeVideo(video, conMiniatura) {
+    const enlaceValido = fuenteDeVideos().analizarUrlDeYouTube(video.url);
+    if (!enlaceValido) return null;
+
+    const enlace = crear('a', {
+      clase: 'video__enlace',
+      hijos: [
+        document.createTextNode('Ver en YouTube'),
+        // El lector de pantalla oye a qué video lleva y que abre otra pestaña.
+        crear('span', { clase: 'solo-lectores', texto: ': ' + video.titulo + ' (se abre en otra pestaña)' }),
+      ],
+    });
+    enlace.href = video.url;
+    enlace.target = '_blank';
+    // noopener: la pestaña nueva no puede controlar esta; noreferrer: no le
+    // dice a YouTube desde qué página llegó el estudiante.
+    enlace.rel = 'noopener noreferrer';
+
+    const texto = crear('div', {
+      clase: 'video__texto',
+      hijos: [
+        crear('p', { clase: 'video__titulo', texto: video.titulo }),
+        crear('p', {
+          clase: 'video__canal',
+          hijos: [
+            crear('span', { texto: video.canal }),
+            ...(video.idioma === 'en' ? [crear('span', { clase: 'video__idioma', texto: 'en inglés' })] : []),
+          ],
+        }),
+        ...(video.nota ? [crear('p', { clase: 'video__nota', texto: video.nota })] : []),
+        enlace,
+      ],
+    });
+
+    // Las listas de reproducción no tienen una miniatura fija por id.
+    const piezas = conMiniatura && enlaceValido.tipo === 'video'
+      ? [crearMiniatura(enlaceValido.id), texto]
+      : [texto];
+    return crear('li', { clase: 'video' + (enlaceValido.tipo === 'lista' ? ' video--lista' : ''), hijos: piezas });
+  }
+
+  // El id ya pasó la validación (solo letras, números, "_" y "-"), así que
+  // es seguro ponerlo en la dirección. width/height fijos reservan el
+  // espacio y evitan que el texto salte cuando la imagen termina de cargar.
+  function crearMiniatura(idVideo) {
+    const imagen = document.createElement('img');
+    imagen.className = 'video__miniatura';
+    imagen.src = 'https://i.ytimg.com/vi/' + idVideo + '/mqdefault.jpg';
+    imagen.alt = '';
+    imagen.loading = 'lazy';
+    imagen.width = 320;
+    imagen.height = 180;
+    return imagen;
+  }
+
+  function crearListaDeVideos(videos, conMiniaturas) {
+    const tarjetas = videos.map((video) => crearTarjetaDeVideo(video, conMiniaturas)).filter(Boolean);
+    return tarjetas.length ? crear('ul', { clase: 'videos', hijos: tarjetas }) : null;
+  }
+
+  // Plegado como los puentes: el estudiante lo abre si quiere ver un video,
+  // y la explicación del paso sigue arriba, a la vista.
+  function crearVideosPlegable(titulo, videos) {
+    const lista = crearListaDeVideos(videos, true);
+    if (!lista) return null;
+    return crear('details', {
+      clase: 'puente-plegable videos-plegable',
+      hijos: [crear('summary', { texto: titulo + ' (' + lista.children.length + ')' }), lista],
+    });
+  }
+
+  // Solo en el paso Idea (el primero). Si la lección no tiene videos
+  // propios, la lección 1 muestra los cursos completos de la ruta: es el
+  // mejor momento para descubrirlos.
+  function videosAntesDelTexto() {
+    if (estado.indicePaso !== 0) return [];
+    const fuente = fuenteDeVideos();
+    const propios = fuente.videosDeLeccion(estado.ruta.id, leccionActual().id);
+    const deLaRuta = estado.indiceLeccion === 0 ? fuente.videosDeRuta(estado.ruta.id) : [];
+    const plegable = propios.length
+      ? crearVideosPlegable('Videos para reforzar', propios)
+      : crearVideosPlegable('Cursos completos de esta ruta', deLaRuta);
+    return plegable ? [plegable] : [];
+  }
+
+  // En el cajón de lecciones, sin miniaturas: el cajón es angosto y ahí
+  // importa ver la lista completa de un vistazo.
+  function pintarVideosDelMenu() {
+    const lista = crearListaDeVideos(fuenteDeVideos().videosDeRuta(estado.ruta.id), false);
+    nodos.menuVideos.hidden = !lista;
+    nodos.menuVideos.replaceChildren(
+      ...(lista ? [crear('h2', { clase: 'menu-videos__titulo', texto: 'Videos de esta ruta' }), lista] : [])
+    );
   }
 
   // Los pasos son etapas: círculos numerados unidos por una línea, con la
@@ -935,6 +1050,7 @@
     nodos.titulo.textContent = paso.titulo;
     nodos.texto.replaceChildren(
       ...puentesAntesDelTexto(),
+      ...videosAntesDelTexto(),
       ...crearBloquesDeTexto(paso.texto),
       ...puentesDespuesDelTexto()
     );
